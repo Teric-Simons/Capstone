@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block main %}
+<form class="form-login m-auto" method="post">
+  {{ form.csrf_token }}
+  <h2>Please sign in</h2>
+  {% include 'flash_messages.html' %}
+  <div >
+    {{ form.username(class='form-control', placeholder="Enter your email") }}
+
+  </div>
+  <div>
+    {{ form.password(class='form-control', placeholder="Enter your password") }}
+  
+  </div>
+
+  <div>
+    {{ form.confirmPassword(class='form-control', placeholder="Confirm your password") }}
+  
+  </div>
+  
+  <button class="btn btn-lg btn-primary w-100 mt-3" type="submit">Sign up</button>
+</form>
+{% endblock %}
