@@ -1,14 +1,69 @@
-<header>
-    <div class="logo-container">
-      <img src="book.png" alt="Edubook Logo" class="logo-img">
-      <span class="logo-text">Edubook</span>
+{% extends "base.html" %}
+
+{% block main %}
+
+<div class="dropdown" onclick="toggleDropdown(this)">
+  <button class="dropbtn">All Books<i class="arrow myarrow"></i></button>
+  <div class="dropdown-content">
+    <a href="#">To Kill a Mockingbird</a>
+    <a href="#">Pride and Prejudice</a>
+    <a href="#">The Great Gatsby</a>
+  </div>
+</div>
+
+<div class="white-box">
+  
+  <div class="chat-container">
+    <img src="{{ url_for('static', filename='images/bot.jpeg') }}" alt="Chat bot" class="bot-img">
+    <div class="teal-box fontr">
+      <p class="book-info">
+        "To Kill a Mockingbird" is a classic novel written by Harper Lee. 
+        Set in the American South during the 1930s, the story unfolds through the perspective of Scout Finch, a young girl, 
+        and follows her father, Atticus Finch, a lawyer defending a black man, Tom Robinson, accused of raping a white woman. 
+        The narrative explores themes of racial injustice, moral growth, and compassion, 
+        providing a poignant commentary on the deeply ingrained prejudices within society. 
+        The book's title symbolizes the senseless harm inflicted on innocent beings, 
+        emphasizing the importance of empathy and understanding. For further details and references, 
+        one can consult the respective page in the novel or explore critical analyses and scholarly 
+        reviews that delve into the profound impact of this literary masterpiece. "To Kill a Mockingbird" is a classic novel written by Harper Lee.
+         
+        and follows her father, Atticus Finch, a lawyer defending a black man, Tom Robinson, accused of raping a white woman. 
+        The narrative explores themes of racial injustice, moral growth, and compassion, 
+        providing a poignant commentary on the deeply ingrained prejudices within society. 
+        The book's title symbolizes the senseless harm inflicted on innocent beings, 
+        emphasizing the importance of empathy and understanding. For further details and references, 
+        one can consult the respective page in the novel or expland follows her father, Atticus Finch, a lawyer defending a black man, Tom Robinson, accused of raping a white woman. 
+        The narrative explores themes of racial injustice, moral growth, and compassion, 
+        providing a poignant commentary on the deeply ingrained prejudices within society. 
+        The book's title symbolizes the senseless harm inflicted on innocent beings, 
+        emphasizing the importance of empathy and understanding. For further details and references, 
+        one can consult the respective page in the novel or expl
+        
+      </p>
     </div>
-    <div class="header-middle">
-      <p>Library<i class="fa-solid fa-book"></i></p>
-      <p>Upload<i class="fa-solid fa-arrow-up-from-bracket"></i></p>
+    
+  </div>
+  <div class="ref">
+    <p>
+      Ref. Page 42
+    </p>
+  </div>
+
+  
+
+  <div class="suggetions">
+    <h3>Suggestions</h3>
+    <div class="sug-box">
+      <p>How does the character of Atticus Finch embody the theme of moral integrity and justice in "To Kill a Mockingbird"?</p>
+      <p>Discuss the portrayal of social class differences in Maycomb. How do characters from different socioeconomic backgrounds interact, 
+        and what role does social class play in the narrative?</p>
     </div>
-    <div class="header-right">
-      <button class="sign-btn">Sign In</button>
-      <button class="sign-btn"><i class="fa-regular fa-user"></i>Sign Up</button>
-    </div>
-  </header>
+  </div>
+</div>
+
+<div class="question">
+  <input type="text" id="questionInput" name="question" placeholder="Ask a question">
+</div>
+
+
+{% endblock %}

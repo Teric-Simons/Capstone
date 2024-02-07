@@ -126,9 +126,11 @@ def logout():
 
 
 
-@app.route('/upload', methods=['POST', 'GET'])
-@login_required
-def upload():
-    pass
+
+
+
+@app.route('/chat')
+def chat():
+    return render_template("chat.html")
 
 
