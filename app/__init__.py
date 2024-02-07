@@ -9,7 +9,7 @@ app = Flask(__name__)
 app.config.from_object(Config)
 
 db = SQLAlchemy(app)
-# Instantiate Flask-Migrate library here
+app.app_context().push()
 
 
 # Flask-Login login manager
