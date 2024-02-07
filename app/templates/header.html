@@ -1,34 +1,54 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
-  <div class="container">
-    <a class="navbar-brand" href="#">Lab 4</a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul class="navbar-nav me-auto">
-        <li class="nav-item">
-          <a class="nav-link active" href="{{ url_for('home') }}">Home <span class="visually-hidden">(current)</span></a>
-        </li>
-        <li class="nav-item">
-         
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="{{ url_for('register') }}">Register</a>
-        </li>
-        <li class="nav-item">
+
+<nav>
+  <div class="logo-container">
+    <img  src="{{ url_for('static', filename='images/logo.jpeg') }}" alt="Edubook Logo" class="logo-img">
+    <span class="logo-text">Edubook</span>
+  </div>
+  <div class="header-middle">
+
+    <ul>
+      <li >
+        <a class="active" href="{{ url_for('home') }}">Library <span class="visually-hidden">(current)</span></a>
+      </li>
+
        
       </li>
-      <ul class="navbar-nav">
-        {%if current_user.is_authenticated%}
-          <li class="nav-item">
-              <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
-          </li>
-        {%else%}
-          <li class="nav-item">
-              <a class="nav-link" href="{{ url_for('login') }}">Login</a>
-          </li>
-        {%endif%}
-      </ul>
+    
+
+      <li >
+        <a class="" href="{{ url_for('register') }}">About</a>
+    </li>
+    </li>
+
+    </ul>
+
+    <div>
+      <button class="upload"><a  href="{{ url_for('upload') }}">Upload</a></button>
     </div>
+       
+  </div>
+  <div class="header-right">
+    <button style="color: var(--idk);
+    ; border-color: var(--idk);
+    ;" class="sign-btn"><a class="" href="{{ url_for('login') }}">Sign in</a></button>
+
+
+    <button class="sign-btn" style="color: white; background-color: var(--idk);
+    ;"  ><a class="" href="{{ url_for('login') }}">Sign up</a></button>
+
   </div>
 </nav>
+
+
+
+
+
+
+
+
+
+
+
+
+
+

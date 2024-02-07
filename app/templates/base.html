@@ -7,6 +7,10 @@
     <title>INFO3180 Lab 4</title>
 
     <!-- Bootstrap -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <script src="https://kit.fontawesome.com/5228807b14.js" crossorigin="anonymous"></script>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@600&display=swap" rel="stylesheet">
     <link href="{{ url_for('static', filename="css/bootstrap.min.css") }}" rel="stylesheet">
 
     <link rel="stylesheet" href="{{ url_for('static', filename="css/app.css") }}">
@@ -17,15 +21,13 @@
         {% include "header.html" %}
     </header>
     <main>
-        <div class="container">
+      {% include "aside.html" %}
+        <div class="container2 ">
+        
             {% block main %}{% endblock %}
         </div>
     </main>
-    <footer>
-        <div class="container">
-            {% include "footer.html" %}
-        </div>
-    </footer>
+
 
     <!-- Include all compiled plugins (below), or include individual files as needed -->
     <script src="{{ url_for('static', filename="js/bootstrap.min.js") }}"></script>

@@ -1,0 +1,215 @@
+body {
+    margin: 0;
+    background-color: #f5f6f9;
+    padding-top: 4rem;
+    height: 100%;
+    --idk: #711a20;
+
+  
+  }
+
+  html{
+    height: 100%;
+  }
+
+  .container2{
+
+    margin-left: 255px;
+    margin-right: 15px;
+    padding-top: 15px;
+    height: 98%;
+  }
+
+  main{
+    height: 100%;
+  }
+
+  nav {
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    height: 64px;
+    min-height: 8%;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    box-sizing: border-box;
+    color: black;
+    box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.2);
+    border: 1px;
+    background-color: white;
+    position: fixed;
+    z-index: 1;
+    font-family: Quicksand,Open Sans,sans-serif;
+  }
+
+  
+
+  .logo-container {
+    display: flex;
+    align-items: center;
+  }
+  
+  .logo-img {
+    width: 44px;
+    height: auto;
+    margin-right: 5px;
+  }
+  
+  .logo-text {
+    font-size: 20px;
+  }
+
+
+  .header-middle {
+    flex-grow: 1;
+    display: flex;
+    justify-content: left; 
+    align-items: flex-start;
+    margin-left: 90px;
+    font-family: Quicksand,Open Sans,sans-serif;
+    color: #85889f;
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 32px;
+  }
+  
+  .header-middle p {
+    margin: 15%;
+    font-size: 20px;
+    cursor: pointer;
+  }
+  
+  .header-middle i{
+    padding-left: 10px;
+
+  }
+  
+  .header-right {
+    display: flex;
+    align-items: center;
+  }
+
+  .header-right button{
+    font-family: Quicksand,Open Sans,sans-serif;
+    background-color: transparent;
+    background-color: var(--btn-color-second, transparent);
+    border-radius: 100px;
+    border: 1px solid transparent;
+    box-sizing: border-box;
+    color: #191d44;
+    color: var(--btn-color-first, #191d44);
+    cursor: pointer;
+    display: inline-block;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 38px;
+    outline: none;
+    padding: 0 16px;
+    position: relative;
+    text-align: center;
+    white-space: nowrap;
+    width: 128px;
+  }
+  
+  .sign-btn {
+    margin-left: 20px;
+    padding: 10px 16px;
+    border: none;
+    border-radius: 20px; 
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  i {
+    padding-right: 4px;
+  }
+  
+  .sign-btn:hover {
+    background-color: rgb(12, 178, 178);
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+  }
+
+.bee{
+  background-color: red;
+
+}
+
+
+  .sidebar {
+    font-family: Quicksand,Open Sans,sans-serif;
+    width: 15%;
+    background-color: white;
+    color: rgb(32, 31, 31);
+    padding: 20px;
+    box-sizing: border-box;
+    float: left;
+    top: 64px;
+    left: 0;
+    height: calc(100vh - 64px);
+    overflow-y: auto;
+    box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.2);
+  }
+  
+  
+  .sidebar-item {
+    margin-bottom: 10px; 
+   
+    padding: 10px;
+  
+    
+  }
+  
+  a{
+    text-decoration: none;
+    color: inherit;
+  }
+
+  li a:hover{
+    color :var(--idk);
+  }
+ ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+  ul, li{
+    display: inline; /* or use 'inline-block' if you want to control width and height */
+    margin-right: 53px
+  }
+
+
+  .icons{
+    color: var(--idk);
+    opacity:0.85;
+  }
+
+  .upload{
+    font-family: Quicksand,Open Sans,sans-serif;
+    color: white;
+    border-color: var(--idk);
+    background-color: var(--idk); 
+    border-radius: 100px;
+    font-size: 16px;
+  }
+
+  .upload a:hover{
+    opacity: 0.8;
+    color: white;
+  }
+
+  .signin{
+    color: white;
+    background-color: #711a20;
+
+  }
+
+
+  .signup{
+    color: #711a20;
+    border-color: #711a20;
+  
+  }
