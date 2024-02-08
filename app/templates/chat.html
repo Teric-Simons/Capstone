@@ -13,37 +13,24 @@
 
 <div class="white-box">
   
-  <div class="chat-container">
+  <div id="chatc" class="chat-container">
     <img src="{{ url_for('static', filename='images/bot.jpeg') }}" alt="Chat bot" class="bot-img">
-    <div class="teal-box fontr">
-      <p class="book-info">
-        "To Kill a Mockingbird" is a classic novel written by Harper Lee. 
-        Set in the American South during the 1930s, the story unfolds through the perspective of Scout Finch, a young girl, 
-        and follows her father, Atticus Finch, a lawyer defending a black man, Tom Robinson, accused of raping a white woman. 
-        The narrative explores themes of racial injustice, moral growth, and compassion, 
-        providing a poignant commentary on the deeply ingrained prejudices within society. 
-        The book's title symbolizes the senseless harm inflicted on innocent beings, 
-        emphasizing the importance of empathy and understanding. For further details and references, 
-        one can consult the respective page in the novel or explore critical analyses and scholarly 
-        reviews that delve into the profound impact of this literary masterpiece. "To Kill a Mockingbird" is a classic novel written by Harper Lee.
-         
-        and follows her father, Atticus Finch, a lawyer defending a black man, Tom Robinson, accused of raping a white woman. 
-        The narrative explores themes of racial injustice, moral growth, and compassion, 
-        providing a poignant commentary on the deeply ingrained prejudices within society. 
-        The book's title symbolizes the senseless harm inflicted on innocent beings, 
-        emphasizing the importance of empathy and understanding. For further details and references, 
-        one can consult the respective page in the novel or expland follows her father, Atticus Finch, a lawyer defending a black man, Tom Robinson, accused of raping a white woman. 
-        The narrative explores themes of racial injustice, moral growth, and compassion, 
-        providing a poignant commentary on the deeply ingrained prejudices within society. 
-        The book's title symbolizes the senseless harm inflicted on innocent beings, 
-        emphasizing the importance of empathy and understanding. For further details and references, 
-        one can consult the respective page in the novel or expl
-        
-      </p>
+    <div id = "anscont" class="teal-box fontr">
+      <div class = "how">
+        <h4>How does it work</h4>
+      </div>
+
+      <div class = "exact">
+        <ul>
+          <li>When you ask a question, we first find relevant pages within the book that matches closest to the answer</li>
+          <li>We use these pages to best answer your question</li>
+        </ul>
+      </div>
+      
     </div>
     
   </div>
-  <div class="ref">
+  <div id = "ref" class="ref">
     <p>
       Ref. Page 42
     </p>
@@ -51,7 +38,7 @@
 
   
 
-  <div class="suggetions">
+  <div id = "sug" class="suggetions">
     <h3>Suggestions</h3>
     <div class="sug-box">
       <p>How does the character of Atticus Finch embody the theme of moral integrity and justice in "To Kill a Mockingbird"?</p>
@@ -64,6 +51,107 @@
 <div class="question">
   <input type="text" id="questionInput" name="question" placeholder="Ask a question">
 </div>
+
+
+
+
+<script>
+ 
+  var containerDiv = document.getElementById("anscont");
+  var suggestions = document.getElementById("sug");
+  var ref = document.getElementById("ref");
+  suggestions.style.display = "none";
+  ref.style.display = "none";
+  
+  
+
+
+var loadingIconHTML = `
+  <div id="loadingIcon">
+    <div class="dot"></div>
+    <div class="dot"></div>
+    <div class="dot"></div>
+  </div>
+`;
+
+
+
+// Combined HTML content with the text content
+
+  document.getElementById("questionInput").addEventListener("keypress", function(event) {
+      if (event.key === "Enter") {
+        containerDiv.innerHTML = loadingIconHTML;
+        var inputValue = document.getElementById("questionInput").value;
+        sendMessage(inputValue);
+      }
+  });
+
+  function addTextCharacterByCharacter(textContent) {
+  // Get the container div
+  var text = document.getElementById("anstext")
+  
+  // Clear any existing content
+  
+  // Initialize index
+  var i = 0;
+  
+  // Function to add characters one by one with a delay
+  function addCharacter() {
+    if (i < textContent.length) {
+      // Append one character at a time
+      containerDiv.innerHTML += textContent.charAt(i);
+      
+      // Increment index
+      i++;
+      
+      // Call the function recursively after a delay
+      setTimeout(addCharacter,  Math.floor(Math.random() * 101 - i/3)); // Adjust delay as needed
+    }
+    else{
+      suggestions.style.display = "";
+                ref.style.display = "";
+    }
+  }
+  
+  // Start adding characters
+  addCharacter();
+  
+}
+
+function toggleDropdown(dropdown) {
+  // Toggle the 'active' class on the dropdown element
+  dropdown.classList.toggle('active');
+}
+
+
+  function sendMessage(message) {
+            fetch('/chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ message: message })
+            })
+            .then(response => response.json())
+            .then(data => {
+                var responseData = data;
+                var textContent = "";
+                var anstextHTML = `
+                  <p id="anstext" class="book-info">
+                    ${textContent}
+                  </p>
+                `;
+                containerDiv.innerHTML = anstextHTML;
+                addTextCharacterByCharacter(responseData)
+        
+    
+              
+                
+ 
+            })
+            .catch(error => console.error('Error:', error));
+        }
+</script>
 
 
 {% endblock %}

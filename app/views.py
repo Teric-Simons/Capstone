@@ -1,12 +1,14 @@
 import os
 from app import app, db, login_manager
-from flask import render_template, request, redirect, url_for, flash, session, abort
+from flask import render_template, request, redirect, url_for, flash, session, abort, jsonify
 from flask_login import login_user, logout_user, current_user, login_required
 from werkzeug.utils import secure_filename
 from werkzeug.security import generate_password_hash, check_password_hash
 from app.models import User
 from app.forms import LoginForm, RegisterForm
 from flask import send_from_directory
+import openai
+openai.api_key = app.config['API_KEY']
 db.create_all()
 ###
 # Routing for your application.
@@ -129,8 +131,17 @@ def logout():
 
 
 
-@app.route('/chat')
+@app.route('/chat', methods=['POST', 'GET'])
 def chat():
+    if request.method == 'POST':
+        data = request.json
+        message = data['message']
+        completion = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo", messages=[{"role": "user", "content": message}]) 
+        response = completion.choices[0].message.content.split(":")[-1].strip()   
+        print(response)
+
+        return jsonify(response)    
     return render_template("chat.html")
 
 
