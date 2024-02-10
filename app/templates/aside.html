@@ -1,7 +1,33 @@
 <aside class="sidebar">
-    <div class="sidebar-item"><a href="chat.html"><i class="icons fa-solid fa-message"></i>Chat</a></div>
-    <div class="sidebar-item"><i  class=" icons fa-solid fa-scroll"></i>Summary</div>
-    <div class="sidebar-item"><i class="icons fa-solid fa-feather"></i>Quiz</div>
+    <div class="sidebar-item">
+      <a  href="{{ url_for('chat') }}">
+        <i class="icons fa-solid fa-message">
+
+        </i>Chat
+      </a>
+      <hr class="bottomlook {% if active_page == 'chat' %}active-link{% endif %}">
+    </div>
+    <div class="closer sidebar-item">
+      <i  class=" icons fa-solid fa-scroll">
+
+      </i>Summary
+      <hr class="bottomlook">
+    </div>
+    <div class="closer sidebar-item">
+      <i class="icons fa-solid fa-feather">
+
+      </i>Quiz
+      <hr class="bottomlook">
+    </div>
+    <div class="closer sidebar-item">
+      <a  href="{{ url_for('upload') }}">
+        <i class="icons fa-solid fa-message">
+
+        </i>
+        Upload
+      </a>
+      <hr class="bottomlook {% if active_page == 'upload' %}active-link{% endif %}">
+    </div>
     <hr>
     <div class="sidebar-item"><i class="icons fa-solid fa-circle-question"></i>Help</div>
   </aside>

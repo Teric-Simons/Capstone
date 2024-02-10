@@ -100,8 +100,7 @@ def login():
 
         if user is None or not check_password_hash(user.password, password):
             flash('Incorrect login information', 'danger')
-            return redirect(url_for('login'))
-        
+            return redirect(url_for('login'))     
         
         # Gets user id, load into session
         login_user(user)
@@ -142,6 +141,15 @@ def chat():
         print(response)
 
         return jsonify(response)    
-    return render_template("chat.html")
+    return render_template("chat.html", active_page = "chat")
 
 
+@app.route('/upload', methods=['POST', 'GET'])
+def upload():
+    if request.method == 'POST':
+        pdf = request.files['file']
+        pdfname = secure_filename(pdf.filename)
+        pdf_path = os.path.join(app.config['UPLOAD_FOLDER'], pdfname)
+        print(pdf_path)
+        pdf.save(pdf_path)
+    return render_template("upload.html", active_page = "upload")

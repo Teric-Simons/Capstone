@@ -73,7 +73,7 @@ body {
     align-items: flex-start;
     margin-left: 90px;
     font-family: Quicksand,Open Sans,sans-serif;
-    color: #85889f;
+    color: #333333;
     font-size: 18px;
     font-weight: 600;
     line-height: 32px;
@@ -145,7 +145,7 @@ body {
     font-family: Quicksand,Open Sans,sans-serif;
     width: 15%;
     background-color: white;
-    color: rgb(32, 31, 31);
+    color: #333333;
     padding: 20px;
     box-sizing: border-box;
     float: left;
@@ -158,13 +158,33 @@ body {
   
   
   .sidebar-item {
-    margin-bottom: 10px; 
-   
     padding: 10px;
+  }
+
+.closer{
+  margin-top: -18px
+}
+
+  .bottomlook{
+    height: 2px;
+    margin-top: 8px;
+    color:transparent;
+    background-color: transparent;
+  }
+
   
-    
+
+  .sidebar-item a:hover{
+    color: gray;
   }
   
+  .active-link {
+    background-color:var(--idk); /* Change this to the desired color */
+    opacity: 0.7;
+}
+
+
+
   a{
     text-decoration: none;
     color: inherit;
@@ -205,13 +225,13 @@ body {
 
   .signin{
     color: white;
-    background-color: #711a20;
+    background-color: var(--idk);
 
   }
 
 
   .signup{
-    color: #711a20;
-    border-color: #711a20;
+    color: var(--idk);
+    border-color: var(--idk);
   
   }

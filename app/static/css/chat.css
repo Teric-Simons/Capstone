@@ -9,11 +9,13 @@
     display: inline-block;
     
     margin-bottom: 15px;
-
+    
   }
   
   .dropbtn {
-    padding: 8px;
+   
+    padding: 2px;
+    padding-left: 13px;
     cursor: pointer;
     width: 400px;
     text-align: left;
@@ -61,7 +63,9 @@
     border: solid black;
     border-width: 0 1.7px 1.7px 0;
     float: right;
-    padding: 2px;
+    padding: 3px;
+    margin-right: 5px;
+    margin-top: 6px;
   }
     
   .myarrow {

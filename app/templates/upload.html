@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+
+{% block main %}
+<div class = uploadcontainer>
+    <div class = "uploadheading">
+        <h2> FILE UPLOAD </h2>
+        <h4> Upload a book or document that you want AI to read for you </h4>
+    </div>
+    <div class="drag-area">
+
+        <div class="icon"><i class="fas fa-cloud-upload-alt"></i></div>
+        <header class="space">Drag & Drop to Upload File(s) here</header>
+        <span class="space">OR</span>
+        <button class="space">Browse File</button>
+        <input type="file" hidden>
+    </div>
+    <div id = "filearea" class="filearea">
+   
+    </div>
+</div>
+
+<script>
+    
+const dropArea = document.querySelector(".drag-area"),
+    dragText = dropArea.querySelector("header"),
+    button = dropArea.querySelector("button"),
+    filearea = document.getElementById("filearea")
+    input = dropArea.querySelector("input");
+let file; 
+var fileHTML = `
+    <div class="file">
+        <div class="filehead">
+            <i class="fa fa-file" aria-hidden="true"></i>
+            <span id="filename">whatever.pdf</span>
+        </div>
+        <div class="progress-container">
+            <progress value="100" max="100"></progress>
+        </div>
+        <i class="fa fa-check" aria-hidden="true"></i>
+    </div>
+`;
+
+button.onclick = () => {
+    input.click(); 
+}
+
+input.addEventListener("change", function() {
+    file = this.files[0];
+    dropArea.classList.add("active");
+    showFile(file); 
+});
+dropArea.addEventListener("dragover", (event) => {
+    event.preventDefault(); 
+    dropArea.classList.add("active");
+    dragText.textContent = "Release to Upload File";
+});
+
+
+dropArea.addEventListener("dragleave", () => {
+    dropArea.classList.remove("active");
+    dragText.textContent = "Drag & Drop to Upload File";
+});
+
+
+
+dropArea.addEventListener("drop", (event) => {
+    event.preventDefault(); 
+    file = event.dataTransfer.files[0];
+    showFile(file); 
+});
+
+var div = null;
+
+function showFile(file) {
+  let filename=file.name;
+  let ext=filename.split('.').pop();
+        if(ext == "pdf" ){ 
+        let fileReader = new FileReader(); 
+  
+
+        fileReader.onload = () => {
+            div = document.createElement('div');
+            div.innerHTML = fileHTML;
+            filearea.appendChild(div);
+            if (filename.length > 16)
+            {
+                document.getElementById("filename").innerHTML = filename.slice(0, 16) + "...";  
+            }
+            else{
+                document.getElementById("filename").innerHTML = filename;
+
+            }
+
+           
+            let fileURL = fileReader.result;
+            let formData = new FormData();
+            formData.append('file', file);
+
+            // Make a POST request to the server
+            fetch('/upload', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                if (response.ok) {
+                    // Handle successful response
+                    console.log("File uploaded successfully");
+                } else {
+                    // Handle error response
+                    console.error("Error uploading file:", response.statusText);
+                }
+            })
+            .catch(error => {
+                // Handle network error
+                console.error("Error uploading file:", error);
+            });
+          
+            
+        }
+        fileReader.readAsDataURL(file);
+    } else {
+      alert("Please Upload a PDF file.");
+        dropArea.classList.remove("active");
+        dragText.textContent = "Drag & Drop to Upload File";
+    }
+    
+}
+</script>
+
+
+{% endblock %}

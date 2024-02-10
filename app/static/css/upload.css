@@ -1,0 +1,115 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&display=swap');
+
+
+.drag-area {
+    border: 2px dashed var(--idk);
+    display: flex;
+    align-items: center;
+    height: 100%;
+    flex-direction: column;
+    padding-bottom: 35px;
+
+}
+
+.drag-area.active {
+    border: 2px solid var(--idk);
+}
+
+.space{
+    padding: 10px;
+
+}
+
+.drag-area .icon {
+    font-size: 100px;
+    color: var(--idk);
+}
+
+.drag-area header {
+    font-size: 1rem;
+    font-weight: 500;
+    color: #333;
+}
+
+.drag-area span {
+    font-size: 1rem;
+    font-weight: 500;
+    color: #333;
+  
+}
+
+.drag-area button {
+    padding: 10px 25px;
+    font-size: 1rem;
+    font-weight: 500;
+    border: none;
+    outline: none;
+    background:var(--idk);
+    color:white;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.drag-area img {
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
+    border-radius: 5px;
+}
+
+.uploadcontainer{
+
+   
+ padding:20px;
+background-color: white;
+margin: 40px;
+box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+
+}
+
+.uploadheading{
+    color: #333;
+
+
+
+    text-align: center;
+    
+}
+
+.uploadheading h2{
+    margin-bottom: 30px;
+}
+
+.file{
+    margin-top: 5px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 18px;
+    align-items: center;
+    width: 45%;
+    padding: 5px;
+    border: solid 1px var(--idk);
+    border-radius: 6px;
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+}
+.fa-check{
+    font-size: 23px;
+    color: green;
+}
+.filehead{
+    display: flex;
+    width: 28%;
+    justify-content: space-between;
+    align-items: center;
+   
+}
+
+.progress-container progress{
+    color: green;
+  
+}
+
+.filehead i{
+    font-size: 35px;
+}
+
