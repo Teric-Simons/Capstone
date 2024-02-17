@@ -4,10 +4,11 @@ from flask import render_template, request, redirect, url_for, flash, session, a
 from flask_login import login_user, logout_user, current_user, login_required
 from werkzeug.utils import secure_filename
 from werkzeug.security import generate_password_hash, check_password_hash
-from app.models import User
+from app.models import *
 from app.forms import LoginForm, RegisterForm
 from flask import send_from_directory
 import openai
+from datetime import datetime
 openai.api_key = app.config['API_KEY']
 db.create_all()
 ###
@@ -147,9 +148,26 @@ def chat():
 @app.route('/upload', methods=['POST', 'GET'])
 def upload():
     if request.method == 'POST':
-        pdf = request.files['file']
-        pdfname = secure_filename(pdf.filename)
-        pdf_path = os.path.join(app.config['UPLOAD_FOLDER'], pdfname)
-        print(pdf_path)
-        pdf.save(pdf_path)
+        book = request.files['file']
+        bookname = secure_filename(book.filename)
+        book_path = os.path.join(app.config['UPLOAD_FOLDER'], bookname)
+        book.save(book_path)
+
+        book = Book(bookname)
+
+        try:
+            db.session.add(book)
+            db.session.commit()
+        except:
+            print("Database error")
+            
     return render_template("upload.html", active_page = "upload")
+
+@app.route('/library', methods=['POST', 'GET'])
+def library():
+    current_datetime = datetime.now()
+
+
+    formatted_datetime = current_datetime.strftime("%A %b %d, %Y")
+    print(formatted_datetime)
+    return render_template("library.html")

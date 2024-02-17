@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block main %}
+<link rel="stylesheet" href="{{ url_for('static', filename="css/library.css") }}">
+<div class="library-content">
+    <div class="search-bar">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <input type="text" placeholder="Search title">      
+    </div>
+    <div class="book-card">
+      <img src="{{ url_for('static', filename='images/mockingbird.jpeg') }}" alt="Book 1" class="book-cover">
+      <div class="book-info">
+        <div class="book-title">How To Kill A Mockingbird</div>
+        <div class="side-to-side">
+          <div class="left">
+            <div class="book-status">Status: <span>Ready</span></div>
+            <div class="book-upload-date">Tue Jan 20, 2024</div>
+          </div>
+          <div class="right">
+            <div class="book-buttons">
+              <button style = "background-color:#a4262e">Chat</button>
+              <button style = "background-color:#26A49B">Summarize</button>
+              <button style = "background-color: #A47426">Generate Quiz</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>  
+    <div class="book-card">
+      <img src="{{ url_for('static', filename='images/pride.jpeg') }}" alt="Book 1" class="book-cover">
+      <div class="book-info">
+        <div class="book-title">Pride and Prejudice</div>
+        <div class="side-to-side">
+          <div class="left">
+            <div class="book-status">Status: <span>Ready</span></div>
+            <div class="book-upload-date">Tue Jan 20, 2024</div>
+          </div>
+          <div class="right">
+            <div class="book-buttons">
+              <button>Chat</button>
+              <button>Summarize</button>
+              <button>Generate Quiz</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div> 
+    <div class="book-card">
+      <img src="{{ url_for('static', filename='images/gatsby.jpeg') }}" alt="Book 3" class="book-cover">
+      <div class="book-info">
+        <div class="book-title">The Great Gatsby</div>
+        <div class="side-to-side">
+          <div class="left">
+            <div class="book-status">Status: <span>Ready</span></div>
+            <div class="book-upload-date" style = "opacity: 0.9;">Tue Jan 20, 2024</div>
+          </div>
+          <div class="right">
+            <div class="book-buttons">
+              <button>Chat</button>
+              <button>Summarize</button>
+              <button>Generate Quiz</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

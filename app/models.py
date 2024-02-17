@@ -1,7 +1,7 @@
 
 from . import db
 from werkzeug.security import generate_password_hash
-
+from datetime import datetime
 class User(db.Model):
     __tablename__ = 'user'
 
@@ -31,3 +31,18 @@ class User(db.Model):
 
     def __repr__(self):
         return '<User %r>' % (self.username)
+    
+
+class Book(db.Model):
+    __tablename__ = 'book'
+    bookid = db.Column(db.Integer, primary_key=True)
+    filename = db.Column(db.String(255))
+    current_datetime = datetime.now()
+    formatted_datetime = current_datetime.strftime("%A %b %d, %Y")
+    dateuploaded = db.Column(db.String(255), default=formatted_datetime)
+
+    def __init__(self, filename):
+        self.filename = filename
+
+    def __repr__(self):
+        return '<Book %r>' % self.filename

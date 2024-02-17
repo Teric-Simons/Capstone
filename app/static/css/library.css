@@ -1,0 +1,123 @@
+.library-content {
+    position: absolute;
+    margin-top: 7%;
+    margin-left: 17%;
+    top: 0;
+    left: 0;
+    margin-right: 5%;
+    width: 75%;
+  }
+  
+  .search-bar{
+    margin-bottom: 20px;
+    position: relative;
+    display: inline-block;
+    width:40%
+  }
+
+  .search-bar i{
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  .search-bar input {
+    width:100%;
+    padding: 10px;
+    padding-left: 30px;
+    border-radius: 20px;
+    border: 1px solid #ccc;
+    outline: none;
+    transition: border-color 0.3s;
+  }
+  
+  
+  .search-bar input:focus {
+    border-color: teal;
+  }
+  
+  .search-bar button {
+    background-color: teal;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    padding: 10px 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .book-card {
+    display: flex;
+    align-items: flex-start;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    padding: 10px;
+    width: 100%;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    background-color: white;
+    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+  }
+  
+  .book-cover {
+    width:80px;
+    object-fit: cover;
+    margin-right: 10px;
+    border-radius: 8px;
+  }
+  
+  .book-info {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .book-title {
+    font-size: 17px;
+    margin-bottom: 5px;
+    margin-left: 10px;
+  }
+  
+  .book-status span{
+    color: green;
+  }
+  .book-status, .book-upload-date {
+    font-size: 14px;
+    padding: 10px;
+    width: auto;
+  }
+  
+  .book-buttons {
+    display: flex;
+    margin-top: 10px;
+  }
+  
+  .book-buttons button {
+    margin-right: 10px;
+    padding: 14px;
+    border-radius: 8px;
+    border: none;
+    color:white;
+    font-weight: 500;
+  }
+
+  .book-buttons button:hover {
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+  }
+
+  .right{
+    margin-left: 370px;
+    margin-top: 20px;
+  }
+
+  .left{
+    margin-top: 10px;
+  }
+  
+  .side-to-side{
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+  
+  }
