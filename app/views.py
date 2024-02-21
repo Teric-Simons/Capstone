@@ -9,6 +9,7 @@ from app.forms import LoginForm, RegisterForm
 from flask import send_from_directory
 import openai
 from datetime import datetime
+import fitz
 openai.api_key = app.config['API_KEY']
 db.create_all()
 ###
@@ -132,17 +133,25 @@ def logout():
 
 
 @app.route('/chat', methods=['POST', 'GET'])
-def chat():
+def chat():  
     if request.method == 'POST':
         data = request.json
         message = data['message']
-        completion = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo", messages=[{"role": "user", "content": message}]) 
-        response = completion.choices[0].message.content.split(":")[-1].strip()   
-        print(response)
+        selbook = data['book']
+        print(selbook)
+        print(message)
+        
 
-        return jsonify(response)    
-    return render_template("chat.html", active_page = "chat")
+    else:
+        books = db.session.execute(db.select(Book)).scalars()
+        bookInfo = []
+        for book in books:
+            bookInfo.append({
+                "Name" : book.filename,
+            })       
+    return render_template("chat.html", active_page = "chat", books = bookInfo)
+
+
 
 
 @app.route('/upload', methods=['POST', 'GET'])
@@ -152,6 +161,7 @@ def upload():
         bookname = secure_filename(book.filename)
         book_path = os.path.join(app.config['UPLOAD_FOLDER'], bookname)
         book.save(book_path)
+        extract_cover_image(book_path)
 
         book = Book(bookname)
 
@@ -165,9 +175,24 @@ def upload():
 
 @app.route('/library', methods=['POST', 'GET'])
 def library():
-    current_datetime = datetime.now()
+    books = db.session.execute(db.select(Book)).scalars()
+    bookInfo = []
+    for book in books:
+        bookInfo.append({
+            "Name" : book.filename,
+            "Uploaded" : book.dateuploaded
+        })    
+    return render_template("library.html", books = bookInfo)
 
+@app.route('/library/<bookname>')
+def get_image(bookname):
+    return send_from_directory(os.path.join(os.getcwd(), app.config['UPLOAD_FOLDER']), bookname.replace('.pdf', '.png'))
 
-    formatted_datetime = current_datetime.strftime("%A %b %d, %Y")
-    print(formatted_datetime)
-    return render_template("library.html")
+def extract_cover_image(pdf_path):
+    with fitz.open(pdf_path) as doc:
+        # Check if the document has pages
+        if doc.page_count > 0:
+            page = doc.load_page(0)  # first page
+            pix = page.get_pixmap()
+            image_path = pdf_path.replace('.pdf', '.png')
+            pix.save(image_path)

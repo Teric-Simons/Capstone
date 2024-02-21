@@ -3,11 +3,11 @@
 {% block main %}
 
 <div class="dropdown" onclick="toggleDropdown(this)">
-  <button class="dropbtn">All Books<i class="arrow myarrow"></i></button>
+  <button id="dropdownButton" class="dropbtn">All Books<i class="arrow myarrow"></i></button>
   <div class="dropdown-content">
-    <a href="#">To Kill a Mockingbird</a>
-    <a href="#">Pride and Prejudice</a>
-    <a href="#">The Great Gatsby</a>
+    {% for book in books %}  
+    <a href="#" onclick="updateButtonText(this)">{{ book.Name.replace('.pdf', '') }}</a>
+    {% endfor %}
   </div>
 </div>
 
@@ -74,7 +74,14 @@ var loadingIconHTML = `
   </div>
 `;
 
+function updateButtonText(element) {
+  // Get the text of the clicked dropdown item
+  var bookName = element.textContent || element.innerText;
 
+  // Update the button's text
+  document.getElementById('dropdownButton').textContent = bookName;
+  localStorage.setItem('selectedBook', bookName + ".pdf");
+}
 
 // Combined HTML content with the text content
 
@@ -125,12 +132,19 @@ function toggleDropdown(dropdown) {
 
 
   function sendMessage(message) {
+            var selectedBook = localStorage.getItem('selectedBook');
+
+            // Prepare the request body with message and selectedBook
+            var requestBody = {
+                message: message,
+                book: selectedBook
+            };
             fetch('/chat', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ message: message })
+                body: JSON.stringify(requestBody)
             })
             .then(response => response.json())
             .then(data => {

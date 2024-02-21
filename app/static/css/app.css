@@ -24,7 +24,9 @@ body {
     height: 100%;
   }
 
-
+a:hover{
+  color: inherit; /* Keeps the same color on hover */
+}
 
   nav {
     top: 0;
@@ -131,7 +133,6 @@ body {
   }
   
   .sign-btn:hover {
-    background-color: rgb(12, 178, 178);
     box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
   }
 
