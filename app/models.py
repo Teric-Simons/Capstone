@@ -46,3 +46,21 @@ class Book(db.Model):
 
     def __repr__(self):
         return '<Book %r>' % self.filename
+    
+
+
+class Chapters(db.Model):
+    __tablename__ = 'chapters'
+    id = db.Column(db.Integer, primary_key=True)
+    book_id = db.Column(db.Integer, db.ForeignKey('book.bookid'), nullable=False)  # Reference the primary key of Book
+    chapters = db.Column(db.Text, nullable=False)  # Assuming chapters are stored as a long text
+
+    # Relationship to the Book model (optional but helpful for object navigation)
+    book = db.relationship('Book', backref=db.backref('chapters', lazy='dynamic'))
+
+    def __init__(self, book_id, chapters):
+        self.book_id = book_id
+        self.chapters = chapters
+
+    def __repr__(self):
+        return '<Chapters %r>' % self.id

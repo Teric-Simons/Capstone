@@ -9,7 +9,7 @@ from flask import send_from_directory
 import openai
 from datetime import datetime
 import fitz, os
-from app import bm25
+from app import bm25, summary
 openai.api_key = app.config['API_KEY']
 db.create_all()
 ###
@@ -182,6 +182,16 @@ def Ai(query, context, score):
     answer = response.choices[0].message.content.split(":")[-1].strip()
     print(answer)
     return answer
+
+
+
+@app.route('/summary', methods=['POST', 'GET'])
+def summaryy():
+    pdf_name = "John_R._Weeks_-_Population__An_Introduction_to_Concepts_and_Issues__Tenth_Edition_2007_Wadsworth_PublishingZ-Lib.io.pdf"
+    summary.main(pdf_name)
+
+    return render_template("summary.html", active_page = "summary", books = "")
+
 
 
 @app.route('/upload', methods=['POST', 'GET'])
