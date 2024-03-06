@@ -1,4 +1,3 @@
-import os
 from app import app, db, login_manager
 from flask import render_template, request, redirect, url_for, flash, session, abort, jsonify
 from flask_login import login_user, logout_user, current_user, login_required
@@ -9,7 +8,8 @@ from app.forms import LoginForm, RegisterForm
 from flask import send_from_directory
 import openai
 from datetime import datetime
-import fitz
+import fitz, os
+from app import bm25
 openai.api_key = app.config['API_KEY']
 db.create_all()
 ###
@@ -134,17 +134,30 @@ def logout():
 
 @app.route('/chat', methods=['POST', 'GET'])
 def chat():  
+    bookInfo = []
     if request.method == 'POST':
         data = request.json
-        message = data['message']
-        selbook = data['book']
-        print(selbook)
-        print(message)
-        
+        query = data['message']
+        bookName = data['book']
+        print(query)
+        print(bookName)
+        context, score = bm25.main(bookName, query)
+        print(score)
+        if score < 1:
+            response = """Unfortunately, I'm unable to provide a direct
+              answer to your question due to insufficient information 
+              provided. If you could provide more details or specify your
+              query further, I would be more than happy to assist. Please
+                feel free to ask more questions or let me know how I can 
+                assist you in any other way."""
+        else:
+            #response = Ai(query, context)
+            print("hi")
+
+        return jsonify(response) 
 
     else:
         books = db.session.execute(db.select(Book)).scalars()
-        bookInfo = []
         for book in books:
             bookInfo.append({
                 "Name" : book.filename,
@@ -152,6 +165,23 @@ def chat():
     return render_template("chat.html", active_page = "chat", books = bookInfo)
 
 
+
+def Ai(query, context, score):
+    prompt = (
+        f"Based on the following script, please answer the question at the end. Here is the script:\n {context}\n"
+        f"Based on the script provided, please answer the following question:{query}"
+    )
+
+
+
+    response = openai.ChatCompletion.create(
+    model="gpt-3.5-turbo",
+    messages=[{"role": "user", "content": prompt}]
+)
+  
+    answer = response.choices[0].message.content.split(":")[-1].strip()
+    print(answer)
+    return answer
 
 
 @app.route('/upload', methods=['POST', 'GET'])

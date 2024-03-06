@@ -4,9 +4,10 @@
 
 <div class="dropdown" onclick="toggleDropdown(this)">
   <button id="dropdownButton" class="dropbtn">All Books<i class="arrow myarrow"></i></button>
+
   <div class="dropdown-content">
     {% for book in books %}  
-    <a href="#" onclick="updateButtonText(this)">{{ book.Name.replace('.pdf', '') }}</a>
+    <a href="#" onclick="updateButtonText(this)" data-full-name="{{ book.Name }}">{{ book.Name.replace('.pdf', '')[:40] }}</a>
     {% endfor %}
   </div>
 </div>
@@ -79,8 +80,20 @@ function updateButtonText(element) {
   var bookName = element.textContent || element.innerText;
 
   // Update the button's text
-  document.getElementById('dropdownButton').textContent = bookName;
-  localStorage.setItem('selectedBook', bookName + ".pdf");
+  var button = document.getElementById('dropdownButton');
+    // Check if the button exists to avoid errors
+    if (button) {
+        // Remove the existing text node(s) if any, keeping child elements intact
+        Array.from(button.childNodes).forEach(function(node) {
+            if (node.nodeType === Node.TEXT_NODE) {
+                button.removeChild(node);
+            }
+        });
+        // Add the new text node at the beginning of the button
+        button.insertBefore(document.createTextNode(bookName), button.firstChild);
+    }
+    var fullBookName = element.getAttribute('data-full-name');
+    localStorage.setItem('selectedBook', fullBookName);
 }
 
 // Combined HTML content with the text content
