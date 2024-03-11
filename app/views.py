@@ -9,7 +9,7 @@ from flask import send_from_directory
 import openai
 from datetime import datetime
 import fitz, os
-from app import bm25, summary
+from app import bm25, summary, transformer
 openai.api_key = app.config['API_KEY']
 db.create_all()
 ###
@@ -184,13 +184,55 @@ def Ai(query, context, score):
     return answer
 
 
+@app.route('/getSummary', methods=['POST', 'GET'])
+def getSummary():
+    data = request.get_json()
 
+    # Extract the bookName, chapter, and nextChapter from the data
+    book_name = data.get('bookName')
+    chapter = data.get('chapter')
+    next_chapter = data.get('nextChapter')
+    print(chapter)
+    summary = transformer.main()
+    print(summary)
+    return jsonify(summary) 
+
+    
 @app.route('/summary', methods=['POST', 'GET'])
 def summaryy():
-    pdf_name = "John_R._Weeks_-_Population__An_Introduction_to_Concepts_and_Issues__Tenth_Edition_2007_Wadsworth_PublishingZ-Lib.io.pdf"
-    summary.main(pdf_name)
+    chapterInfo = []
+    bookInfo = []
+    if request.method == "POST":
+        print("in hereeeeee")
+        data = request.json 
+        book_name = data.get('bookName')
+        book = db.session.query(Book).filter(Book.filename == book_name).first()
+        bookid = book.bookid
+        chapters = Chapters.query.filter_by(book_id=bookid).all()
 
-    return render_template("summary.html", active_page = "summary", books = "")
+        for i in range(len(chapters)):
+            # Create a dictionary with the chapter name
+            chapterDict = {
+                "Name": chapters[i].chapters
+            }
+
+            # Check if there is a next chapter
+            if i + 1 < len(chapters):
+                chapterDict["NextName"] = chapters[i+1].chapters
+
+            # Append the dictionary to the chapterInfo list
+            chapterInfo.append(chapterDict)
+        print(chapterInfo)
+        return jsonify(chapterInfo)
+    else:
+        books = db.session.execute(db.select(Book)).scalars()
+        for book in books:
+            bookInfo.append({
+                "Name" : book.filename,
+            })  
+
+    return render_template("summary.html", active_page = "summary",
+                            books = bookInfo, chapters = chapterInfo)
 
 
 
@@ -210,7 +252,19 @@ def upload():
             db.session.commit()
         except:
             print("Database error")
-            
+    
+        book = Book.query.filter_by(filename=bookname).first()
+        bookId = book.bookid
+        sections = summary.main(bookname)
+        if sections != False:
+            for section in sections:
+                chapter = Chapters(bookId, section)
+                try:
+                    db.session.add(chapter)
+                    db.session.commit()
+                except:
+                    print("Database error")
+
     return render_template("upload.html", active_page = "upload")
 
 @app.route('/library', methods=['POST', 'GET'])

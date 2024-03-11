@@ -39,8 +39,14 @@
     border-radius: 10px;
     box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
     border: 1px solid var(--idk);
+    max-height: 200px;
+    overflow-y: auto; 
   }
-  
+  #droppings{
+    display: inline-flex;
+    justify-content: space-between;
+    width: 100%;
+  }
   .dropdown-content a {
     display: block;
     padding: 10px;

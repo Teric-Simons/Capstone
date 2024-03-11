@@ -1,9 +1,225 @@
 {% extends "base.html" %}
 
 {% block main %}
+<link rel="stylesheet" href="{{ url_for('static', filename="css/chat.css") }}">
+<div id ="droppings">
+<div class="dropdown" onclick="toggleDropdown(this)">
+  <button id="dropdownButton" class="dropbtn">All Books<i class="arrow myarrow"></i></button>
 
-<div>
-    <button>press me</button>
+ 
+
+  
+  <div class="dropdown-content">
+    {% for book in books %}  
+    <a href="#" onclick="updateButtonText(this)" data-full-name="{{ book.Name }}">{{ book.Name.replace('.pdf', '')[:40] }}</a>
+    {% endfor %}
+  </div>
 </div>
 
-{% endblock %}
+<div class="dropdown" onclick="toggleDropdown2(this)">
+    <button id="dropdownButton2" class="dropbtn">Sections<i class="arrow myarrow"></i></button>
+  
+    <div class="dropdown-content">
+      {% for chapter in chapters %}
+      <a href="#" onclick="updateButtonText2(this)" data-full-name="{{ chapter.Name }}">{{ chapter.Name[:40] }}</a>
+      {% endfor %}
+    </div>
+  </div>
+
+</div>
+
+<div class="white-box">
+  
+  <div id="chatc" class="chat-container">
+    <img src="{{ url_for('static', filename='images/bot.jpeg') }}" alt="Chat bot" class="bot-img">
+    <div id = "anscont" class="teal-box fontr">
+      <div class = "how">
+        <h4>How does it work</h4>
+      </div>
+
+      <div class = "exact">
+        <ul>
+          <li>Select a book.</li>
+          <li>Select any section to see a brief summary, providing you with a quick overview.</li>
+        </ul>
+      </div>
+      
+    </div>
+    
+  </div>
+
+
+  <script>
+  var containerDiv = document.getElementById("anscont");
+
+
+
+
+var loadingIconHTML = `
+  <div id="loadingIcon">
+    <div class="dot"></div>
+    <div class="dot"></div>
+    <div class="dot"></div>
+  </div>
+`;
+
+function updateButtonText2(element) {
+  // Get the text of the clicked dropdown item
+  var bookName = element.textContent || element.innerText;
+  containerDiv.innerHTML = loadingIconHTML;
+  // Update the button's text
+  var button = document.getElementById('dropdownButton2');
+    // Check if the button exists to avoid errors
+    if (button) {
+        // Remove the existing text node(s) if any, keeping child elements intact
+        Array.from(button.childNodes).forEach(function(node) {
+            if (node.nodeType === Node.TEXT_NODE) {
+                button.removeChild(node);
+            }
+        });
+        // Add the new text node at the beginning of the button
+        button.insertBefore(document.createTextNode(bookName), button.firstChild);
+    }
+    var chapter = element.getAttribute('data-full-name');
+    var nextchapter = element.getAttribute('data-next-name');
+
+
+// Retrieve bookName from localStorage
+    var bookName = localStorage.getItem('selectedBook');
+
+    // Prepare the data object for the POST request
+    const data = {
+        bookName: bookName,
+        chapter: chapter,
+        nextChapter: nextchapter,
+    };
+
+    fetch('/getSummary', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+})
+.then(response => response.json())
+.then(data => {
+  var responseData = data;
+  var textContent = "";
+  var anstextHTML = `
+    <p id="anstext" class="book-info">
+      ${textContent}
+    </p>
+  `;
+  containerDiv.innerHTML = anstextHTML;
+  addTextCharacterByCharacter(responseData)
+})
+.catch(error => {
+    console.error('Error sending data:', error);
+    // Handle any errors that occur during the fetch request
+});
+
+}
+
+
+function updateButtonText(element) {
+  // Get the text of the clicked dropdown item
+  var bookName = element.textContent || element.innerText;
+
+  // Update the button's text
+  var button = document.getElementById('dropdownButton');
+    // Check if the button exists to avoid errors
+    if (button) {
+        // Remove the existing text node(s) if any, keeping child elements intact
+        Array.from(button.childNodes).forEach(function(node) {
+            if (node.nodeType === Node.TEXT_NODE) {
+                button.removeChild(node);
+            }
+        });
+        // Add the new text node at the beginning of the button
+        button.insertBefore(document.createTextNode(bookName), button.firstChild);
+    }
+    var fullBookName = element.getAttribute('data-full-name');
+    localStorage.setItem('selectedBook', fullBookName);
+
+
+    const data = { bookName: fullBookName };
+
+// Send the POST request to the Flask "summaryy" route
+  fetch('/summary', {
+      method: 'POST', // Specify the method
+      headers: {
+          'Content-Type': 'application/json', // Specify the content type as JSON
+      },
+      body: JSON.stringify(data), // Convert the JavaScript object to a JSON string
+  })
+  .then(response => response.json())
+  .then(chapterInfo => {
+      console.log('Received chapters:', chapterInfo);
+      const chaptersInfo = chapterInfo;
+      const dropdownContents = document.querySelectorAll('.dropdown-content');
+      const dropdownContent = dropdownContents[1];
+      dropdownContent.innerHTML = ''; // Clear existing content
+      chaptersInfo.forEach(chapter => {
+      const anchor = document.createElement('a');
+      anchor.href = "#";
+      anchor.textContent = chapter.Name.slice(0, 40); // Limit to 40 characters
+      anchor.setAttribute('onclick', 'updateButtonText2(this)');
+      anchor.dataset.fullName = chapter.Name;
+      anchor.dataset.nextName = chapter.NextName;
+      dropdownContent.appendChild(anchor);
+    });
+      
+  })
+
+  .catch((error) => {
+      console.error('Error:', error); // Handle errors
+  });
+
+}
+
+function addTextCharacterByCharacter(textContent) {
+  // Get the container div
+  var text = document.getElementById("anstext")
+  
+  // Clear any existing content
+  
+  // Initialize index
+  var i = 0;
+  
+  // Function to add characters one by one with a delay
+  function addCharacter() {
+    if (i < textContent.length) {
+      // Append one character at a time
+      containerDiv.innerHTML += textContent.charAt(i);
+      
+      // Increment index
+      i++;
+      
+      // Call the function recursively after a delay
+      setTimeout(addCharacter,  Math.floor(Math.random() * 101 - i/3)); // Adjust delay as needed
+    }
+    else{
+      suggestions.style.display = "";
+                ref.style.display = "";
+    }
+  }
+  
+  // Start adding characters
+  addCharacter();
+  
+}
+
+function toggleDropdown(dropdown) {
+  // Toggle the 'active' class on the dropdown element
+  dropdown.classList.toggle('active');
+}
+
+
+function toggleDropdown2(dropdown) {
+  // Toggle the 'active' class on the dropdown element
+  dropdown.classList.toggle('active');
+}
+
+
+  </script>
+  {% endblock %}

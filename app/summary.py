@@ -1,5 +1,6 @@
 import PyPDF2
 import openai
+import re
 
 def read_first_10_pages_to_structure(pdf_name):
     # Open the PDF file
@@ -17,7 +18,7 @@ def read_first_10_pages_to_structure(pdf_name):
         for i in range(num_pages):
             page = reader.pages[i]  # Get the page
             page_text = page.extract_text()  # Extract text from the page
-            if "table of content" in page_text.lower():
+            if "content" in page_text.lower():
                 # Create a dictionary for the current page and add it to the list
                 text+=page_text
     
@@ -26,7 +27,7 @@ def read_first_10_pages_to_structure(pdf_name):
 
 def Ai(text):
     prompt = (
-        f"Extract all the subtopics in the table of contents.List them comma seperated:\n {text}"
+        f"Extract all the subtopics in the table of contents.Make it as detailed as possible.List them comma seperated:\n {text}"
     )
 
     response = openai.ChatCompletion.create(
@@ -34,12 +35,24 @@ def Ai(text):
     messages=[{"role": "user", "content": prompt}]
 )
   
-    answer = response.choices[0].message.content.split(":")[-1].strip()
-    print(answer)
-    return answer
+    answer = response.choices[0].message.content.split(":")[-1].strip().split(",")
+
+    pattern = re.compile(r'[\n\t\r\f\v]+')
+    cleaned_answer = [pattern.sub('', text) for text in answer]
+    final = [text.title() for text in cleaned_answer if "table of content" not in text.lower()]
+    print(final)
+    return final
 
 
 def main(pdf_name):
     text = read_first_10_pages_to_structure(pdf_name)
-    answer = Ai(text)
+    print(text)
+    if not text:
+        return False
+    else:
+        answer = Ai(text)
+    if len(answer) < 4:
+        return False
+    else:
+        return answer
 
