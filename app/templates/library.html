@@ -20,10 +20,10 @@
           <div class="right">
             
             <div class="book-buttons">
-              <button style = "background-color:#a4262e">Chat</button>
+              <a href="{{ url_for('chat', selectedbook = book.Name) }}" style="background-color: #a4262e">Chat</a>
               
-              <button style = "background-color:#26A49B">Summarize</button>
-              <button style = "background-color: #A47426">Generate Quiz</button>
+              <a href="{{ url_for('summaryy') }}" style="background-color: #26A49B">Summarize</a>
+              <a href="{{ url_for('quiz', selectedbook = book.Name) }}" style="background-color: #A47426">Generate Quiz</a>
             </div>
           </div>
         </div>

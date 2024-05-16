@@ -1,0 +1,311 @@
+{% extends "base.html" %}
+
+{% block main %}
+<link rel="stylesheet" href="{{ url_for('static', filename="css/chat.css") }}">
+<link rel="stylesheet" href="{{ url_for('static', filename="css/quiz.css") }}">
+<div id = "heading">
+
+
+<div class="dropdown" onclick="toggleDropdown(this)">
+  <button id="dropdownButton" class="dropbtn">All Books<i class="arrow myarrow"></i></button>
+
+  <div class="dropdown-content">
+    {% for book in books %}  
+    <a href="#" onclick="updateButtonText(this)" data-full-name="{{ book.Name }}">{{ book.Name.replace('.pdf', '')[:40] }}</a>
+    {% endfor %}
+  </div>
+</div>
+
+<div>
+  <input type="text" id="topic" name="myTextInput" placeholder="Enter Quiz Topic">
+</div>
+</div>
+<div class="white-box" style="width: 100%;">
+  
+  <div id="chatc" class="chat-container">
+    <img src="{{ url_for('static', filename='images/bot.jpeg') }}" alt="Chat bot" class="bot-img">
+   
+    <div id = "anscont" class="teal-box fontr" style="width: 100%;">
+      <div class = "how">
+        <h4>How does it work</h4>
+      </div>
+
+      <div class = "exact">
+        <ul>
+          <li>Enter a topic based on the book.</li>
+          <li>We use these pages to best generate a quiz</li>
+        </ul>
+      </div>
+
+      {% if selectedbook %}
+      <script>
+          // Set selectedBook in localStorage
+          localStorage.setItem('selectedBook', '{{ selectedbook }}');
+          var isselected = true;
+      </script>
+ 
+{% endif %}
+      
+    </div>
+  
+    <div id="quizResults" style="display:none;">
+      <h2>Quiz Results</h2>
+      <p id="resultText" style="margin-left: 70px;"></p>
+  </div>
+   
+    <div id ="actualcontainer" style="display: none;">
+      <div id="quizContainerr">
+        <h2>Question <span id="questionNumber">1</span></h2>
+        <p id="questionText">What is the tallest mammal on Earth?</p>
+        <form id="answerForm">
+          <label class="radioinput"><input type="radio" name="answer" id="option1"> Option 1</label><br>
+          <label class="radioinput"><input type="radio" name="answer" id="option2"> Option 2</label><br>
+          <label class="radioinput"><input type="radio" name="answer" id="option3"> Option 3</label><br>
+          <label class="radioinput"><input type="radio" name="answer" id="option4"> Option 4</label><br>
+      </form>
+      <div class = "navbutton">
+        <button id="submitButton">Submit</button>
+        <button id="nextButton">Next</button>
+      </div>
+
+        
+    </div>
+    </div>
+   
+    <div id = "quizouter">
+     
+      
+    <div id="quizContainer" style="display: none;">
+      <h2 style="margin-left: 50px;">Fertility in Women</h2>
+      <p style="margin-left: 20px; color: black;">Instructions:</p>
+      <ul>
+          <li>Read each question carefully before answering.</li>
+          <li>There is only one correct answer for each question.</li>
+          <li>Click the "Next" button to proceed to the next question.</li>
+          <li>You can't go back to previous questions once you move forward.</li>
+          <li>Click the "Submit" button at the end to see your results.</li>
+      </ul>
+      <button id="startQuizButton" style="margin-left: 150px;">Start Quiz</button>
+  </div>
+  <script src="{{ url_for('static', filename="js/quiz.js") }}"></script>
+
+</div>
+  
+
+    <style>
+      li {
+    margin-bottom: 10px;
+    text-align: left;
+}
+.white-box{
+  width: 60%;
+}
+#startQuizButton {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin-top: 20px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#startQuizButton:hover {
+    background-color: #45a049;
+}
+      #quizouter{
+        display: block;
+        width: auto;
+      
+        justify-content: center;
+        padding: 10px;
+      }
+      #quizContainer{
+      
+        padding:10px;
+        border-radius: 10px;
+      
+
+  
+        
+      }
+
+
+      #anscont{
+        display: inline-block;
+      }
+      #heading{
+        display: flex;
+        justify-content: space-between;
+      }
+
+      #topic{
+        padding: 2px;
+    padding-left: 13px;
+    
+    width: 400px;
+    text-align: left;
+    background-color: white;
+    border: none;
+
+    border: solid 1px var(--idk);
+    border-radius: 10px;
+    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+    opacity: 0.9;
+    font-family: Quicksand,Open Sans,sans-serif;
+      }
+    </style>
+
+
+<script>
+ 
+  var containerDiv = document.getElementById("anscont");
+  var suggestions = document.getElementById("sug");
+  var ref = document.getElementById("ref");
+
+  
+  
+
+
+var loadingIconHTML = `
+  <div id="loadingIcon">
+    <div class="dot"></div>
+    <div class="dot"></div>
+    <div class="dot"></div>
+  </div>
+`;
+
+function updateButtonText(element) {
+  // Get the text of the clicked dropdown item
+  var bookName = element.textContent || element.innerText;
+
+  // Update the button's text
+  var button = document.getElementById('dropdownButton');
+    // Check if the button exists to avoid errors
+    if (button) {
+        // Remove the existing text node(s) if any, keeping child elements intact
+        Array.from(button.childNodes).forEach(function(node) {
+            if (node.nodeType === Node.TEXT_NODE) {
+                button.removeChild(node);
+            }
+        });
+        // Add the new text node at the beginning of the button
+        button.insertBefore(document.createTextNode(bookName), button.firstChild);
+    }
+    var fullBookName = element.getAttribute('data-full-name');
+    localStorage.setItem('selectedBook', fullBookName);
+}
+
+
+  function addTextCharacterByCharacter(textContent) {
+  // Get the container div
+  var text = document.getElementById("anstext")
+  
+  // Clear any existing content
+  
+  // Initialize index
+  var i = 0;
+  
+  // Function to add characters one by one with a delay
+  function addCharacter() {
+    if (i < textContent.length) {
+      // Append one character at a time
+      containerDiv.innerHTML += textContent.charAt(i);
+      
+      // Increment index
+      i++;
+      
+      // Call the function recursively after a delay
+      setTimeout(addCharacter,  Math.floor(Math.random() * 101 - i/3)); // Adjust delay as needed
+    }
+    else{
+      suggestions.style.display = "";
+                ref.style.display = "";
+    }
+  }
+  
+  // Start adding characters
+  addCharacter();
+  
+}
+
+function toggleDropdown(dropdown) {
+  // Toggle the 'active' class on the dropdown element
+  dropdown.classList.toggle('active');
+}
+
+const topicInput = document.getElementById('topic');
+let bee;
+topicInput.addEventListener('keypress', function(event) {
+    // Check if the key pressed is the Enter key
+    var selectedBook = localStorage.getItem('selectedBook');
+    if (event.key === 'Enter') {
+        // Prevent the default behavior of the Enter key (e.g., form submission)
+        event.preventDefault();
+        
+        // Get the topic entered by the user
+        const topic = topicInput.value;
+        const h2Element = document.querySelector('#quizContainer h2');
+
+        // Change its textContent to "bee"
+        h2Element.textContent = topic;
+        var requestBody = {
+            topic: topic,
+            book: selectedBook
+        };
+        containerDiv.innerHTML = loadingIconHTML;
+        // Send a POST request with the topic to fetch questions
+        fetch('/fetch-questions', { // Update the endpoint URL here
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(requestBody)
+        })
+        .then(response => response.json())
+            .then(data => {
+
+              const whiteBoxes = document.querySelectorAll('.white-box');
+            // Assign the fetched questions to the variable
+            const startContainer = document.getElementById('quizContainer');
+            questions = data;
+            console.log(questions)
+            document.getElementById('anscont').style.display='none';
+            startContainer.style.display = 'block';
+            whiteBoxes.forEach(box => {
+                box.style.width = '60%';
+            });
+         
+        })
+        .catch(error => {
+            console.error('Error fetching questions:', error);
+        });
+    }
+});
+
+function onPageLoad() {
+        // Your code here
+        if (isselected)
+        {
+          var selectedBook = localStorage.getItem('selectedBook');
+          var dropdownItems = document.querySelectorAll('.dropdown-content a');
+    dropdownItems.forEach(function(item) {
+        var fullName = item.getAttribute('data-full-name');
+        if (fullName === selectedBook) {
+            updateButtonText(item);
+        }
+    });
+        }
+    }
+
+    // Attach the onPageLoad function to the window.onload event
+    window.onload = onPageLoad;
+
+  
+</script>
+
+
+{% endblock %}

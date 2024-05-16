@@ -30,7 +30,17 @@
     
   
   }
-  
+  .summarize-button {
+    margin-top: -4px;
+    padding: 9px;
+    border-radius: 15px;
+    border: none;
+    background-color: #1A716B;
+    color: white;
+    font-weight: 500;
+    letter-spacing: 1px;
+    font-size: 15px;
+  }
   .dropdown-content {
     display: none;
     position: absolute;
@@ -43,8 +53,15 @@
     overflow-y: auto; 
   }
   #droppings{
-    display: inline-flex;
+    display: none;
     justify-content: space-between;
+    width: 100%;
+  }
+
+
+  #droppings2{
+    display:none;
+    justify-content: space-evenly;
     width: 100%;
   }
   .dropdown-content a {
@@ -131,7 +148,7 @@
     margin-top: 20px;
     margin-bottom: 20px;
     margin-right: 20px;
-    max-height: 325px;
+    max-height: 230px;
     overflow-y: auto;
     width: 100%;
     box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;

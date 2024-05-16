@@ -9,9 +9,15 @@ from flask import send_from_directory
 import openai
 from datetime import datetime
 import fitz, os
-from app import bm25, summary, transformer
+from app import bm25, summary, transformer, nn
+import json
+from groq import Groq
 openai.api_key = app.config['API_KEY']
+client = Groq(
+    api_key=app.config['API_KEY'],
+)
 db.create_all()
+
 ###
 # Routing for your application.
 ###
@@ -99,23 +105,56 @@ def login():
 
      
         user = User.query.filter_by(email=email).first()
-
+        print(user)
+        print(password)
+        print(check_password_hash(password, user.password))
         if user is None or not check_password_hash(user.password, password):
             flash('Incorrect login information', 'danger')
             return redirect(url_for('login'))     
         
         # Gets user id, load into session
         login_user(user)
-
+        userid = user.id
+        session['uid']=userid
+    
         flash('You have succesfully logged in.', 'success')
-        return redirect(url_for("login"))  # The user should be redirected to the upload form instead
+        return redirect(url_for("library"))  # The user should be redirected to the upload form instead
     return render_template("login.html", form=form)
 
+
+@app.route('/signup', methods=['GET', 'POST'])
+def signup():
+    """Render the website's sign up page"""
+    form = RegisterForm()
+
+    #stores new credentials to user table in database on submit
+    if form.validate_on_submit():
+        email = form.email.data
+    
+        if form.password.data == form.confirmPassword.data:
+            print(form.password.data)
+
+            password = form.password.data
+            newuser = User(email, password)
+            uemail = User.query.filter_by(email=form.email.data).first()
+            if uemail:
+                flash('Email already exists', 'danger')
+            else:
+                db.session.add(newuser)
+                db.session.commit()
+                flash('Successfully Registered. You may Log In!', 'success')            
+                return redirect(url_for('login'))
+        else:
+            flash('Passwords do not match', 'danger')
+    else:
+        flash_errors(form)        
+    return render_template('signup.html', form = form)
 
 # user_loader callback. This callback is used to reload the user object from
 # the user ID stored in the session
 @login_manager.user_loader
 def load_user(id):
+ 
     return db.session.execute(db.select(User).filter_by(id=id)).scalar()
 
 
@@ -125,24 +164,93 @@ def load_user(id):
 def logout():
     logout_user()
     flash('Success')
-    return redirect(url_for('home'))
+    return redirect(url_for('login'))
+
+@app.route('/quiz', methods=['POST', 'GET'])
+def quiz():
+    bookInfo = []
+    books = db.session.execute(db.select(Book)).scalars()
+    for book in books:
+        bookInfo.append({
+            "Name" : book.filename,
+        })
+    selectedbook = request.args.get('selectedbook')
+    return render_template("quiz.html", active_page = "quiz", books = bookInfo, selectedbook = selectedbook)
+
+@app.route('/fetch-questions', methods=['POST'])
+def fetch_questions():
+    data = request.json
+    query = data['topic']
+    bookName = data['book']
+    
+   
+   
+  
+    context = bm25.main(bookName, query, more=True)
+
+    prompt = (
+    f"Generate 5 multiple-choice questions based on the following context:\n\n"
+    f"Context: {context}\n\n"
+    f"The answer should be a list of dictionaries where each dictionary looks like this.\n"
+    f"""{{
+    "question": "What is the capital of France?",
+    "options": ["London", "Paris", "Berlin", "Rome"],
+    "correctAnswer": "Paris"
+}}\n"""
+)
 
 
+    try:
+        chat_completion = client.chat.completions.create(
+        messages=[
+            {
+                "role": "user",
+                "content": prompt,
+            }
+        ],
+        model="mixtral-8x7b-32768",
+        )
+        answer = chat_completion.choices[0].message.content
+    except Exception:
+        answer = "Unable to generate"
+    
+   
 
+    import ast
 
+   
+    dictionary = ast.literal_eval(answer)
+    json_data = jsonify(dictionary)
+
+    return json_data
+  
+
+   
+    return
 
 
 @app.route('/chat', methods=['POST', 'GET'])
 def chat():  
     bookInfo = []
+    
+    suggestions = []
     if request.method == 'POST':
         data = request.json
         query = data['message']
         bookName = data['book']
-        print(query)
-        print(bookName)
-        context, score = bm25.main(bookName, query)
-        print(score)
+        
+        
+       
+       
+        pagenum, context, score = bm25.main(bookName, query, pagenum = None)
+        print(bookName, pagenum)
+
+        try:
+            suggestions = nn.main(bookName, pagenum)
+        except Exception:
+            suggestions = nn.main(bookName, 100)
+      
+        
         if score < 1:
             response = """Unfortunately, I'm unable to provide a direct
               answer to your question due to insufficient information 
@@ -151,8 +259,20 @@ def chat():
                 feel free to ask more questions or let me know how I can 
                 assist you in any other way."""
         else:
-            #response = Ai(query, context)
-            print("hi")
+            try:
+                response = Ai(query, context, score)
+            except Exception:
+                print("api failed")
+                response = "fail"
+          
+
+        response = {
+        "response": response,
+        "suggestions": suggestions,
+        "pagenum" : pagenum
+        }
+    
+   
 
         return jsonify(response) 
 
@@ -162,7 +282,10 @@ def chat():
             bookInfo.append({
                 "Name" : book.filename,
             })       
-    return render_template("chat.html", active_page = "chat", books = bookInfo)
+        selectedbook = request.args.get('selectedbook')
+
+
+    return render_template("chat.html", active_page = "chat", books = bookInfo, selectedbook = selectedbook)
 
 
 
@@ -174,62 +297,85 @@ def Ai(query, context, score):
 
 
 
-    response = openai.ChatCompletion.create(
-    model="gpt-3.5-turbo",
-    messages=[{"role": "user", "content": prompt}]
-)
+    chat_completion = client.chat.completions.create(
+    messages=[
+        {
+            "role": "user",
+            "content": prompt,
+        }
+    ],
+    model="mixtral-8x7b-32768",
+    )
+
+    answer = chat_completion.choices[0].message.content
+     
   
-    answer = response.choices[0].message.content.split(":")[-1].strip()
-    print(answer)
+    
+
     return answer
 
 
 @app.route('/getSummary', methods=['POST', 'GET'])
 def getSummary():
-    data = request.get_json()
-
-    # Extract the bookName, chapter, and nextChapter from the data
+    data = request.json
     book_name = data.get('bookName')
-    chapter = data.get('chapter')
-    next_chapter = data.get('nextChapter')
-    print(chapter)
-    summary = transformer.main()
-    print(summary)
-    return jsonify(summary) 
+    flag = data.get('flag')
+    score = 90
+
+    words = data.get('wordss', [])
+   
+    if(not flag):
+        query = ' '.join(words)
+        _, context, score = bm25.main(book_name, query)
+        
+    else:
+       
+        context = bm25.main(book_name, "query", pagenum = int(words))
+       
+    # Extract the bookName, chapter, and nextChapter from the data
 
     
+
+    summary  = Ai("Summarize this", context, score)
+   
+    return jsonify(summary) 
+
+@app.route('/get_topics', methods=['POST'])
+def get_topics():
+    # Example usage, assuming you have a predefined 'lda_model' loaded and ready
+    
+    data = request.json 
+    book_name = data.get('bookName')
+    
+
+    book = Book.query.filter_by(filename=book_name).first()
+    bookId = book.bookid
+   
+    book_topics = Topics.query.filter_by(book_id=bookId).first()
+
+    if book_topics is None:
+        info = summary.main(book_name)
+        topics_string = json.dumps(info)
+        topic = Topics(book_id=bookId, topics=topics_string)  # Create new chapter
+        db.session.add(topic)
+        db.session.commit() 
+   
+    else:
+        info = json.loads(book_topics.topics)
+    
+
+    return jsonify(info)
+
 @app.route('/summary', methods=['POST', 'GET'])
 def summaryy():
     chapterInfo = []
     bookInfo = []
-    if request.method == "POST":
-        print("in hereeeeee")
-        data = request.json 
-        book_name = data.get('bookName')
-        book = db.session.query(Book).filter(Book.filename == book_name).first()
-        bookid = book.bookid
-        chapters = Chapters.query.filter_by(book_id=bookid).all()
-
-        for i in range(len(chapters)):
-            # Create a dictionary with the chapter name
-            chapterDict = {
-                "Name": chapters[i].chapters
-            }
-
-            # Check if there is a next chapter
-            if i + 1 < len(chapters):
-                chapterDict["NextName"] = chapters[i+1].chapters
-
-            # Append the dictionary to the chapterInfo list
-            chapterInfo.append(chapterDict)
-        print(chapterInfo)
-        return jsonify(chapterInfo)
-    else:
-        books = db.session.execute(db.select(Book)).scalars()
-        for book in books:
-            bookInfo.append({
-                "Name" : book.filename,
-            })  
+    
+    books = db.session.execute(db.select(Book)).scalars()
+    for book in books:
+        bookInfo.append({
+            "Name" : book.filename,
+        })  
 
     return render_template("summary.html", active_page = "summary",
                             books = bookInfo, chapters = chapterInfo)
@@ -253,17 +399,7 @@ def upload():
         except:
             print("Database error")
     
-        book = Book.query.filter_by(filename=bookname).first()
-        bookId = book.bookid
-        sections = summary.main(bookname)
-        if sections != False:
-            for section in sections:
-                chapter = Chapters(bookId, section)
-                try:
-                    db.session.add(chapter)
-                    db.session.commit()
-                except:
-                    print("Database error")
+        
 
     return render_template("upload.html", active_page = "upload")
 

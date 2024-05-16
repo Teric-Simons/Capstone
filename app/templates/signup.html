@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% block main %}
+
+<div id = "treesh"> 
+
+  <link rel="stylesheet" href="{{ url_for('static', filename="css/login.css") }}">
+
+
+ 	<!-- Main Content -->
+   <div class="container-fluid">
+		<div class="row main-content bg-success text-center">
+			<div class="col-md-4 text-center company__info">
+				<span class="company__logo"><h2><span class="fa fa-android"></span></h2></span>
+				<h4 class="company_title">EduBook</h4>
+			</div>
+			<div class="col-md-8 col-xs-12 col-sm-12 login_form ">
+				<div class="container-fluid">
+					<div class="row">
+						<h2>Sign up</h2>
+					</div>
+					<div class="row">
+						<form class="form-login m-auto" method="post">
+              {{ form.csrf_token }}
+              {% include 'flash_messages.html' %}
+							<div class="row">
+								
+                {{ form.email(class='form__input', placeholder="Email") }}
+							</div>
+							<div class="row">
+								<!-- <span class="fa fa-lock"></span> -->
+                {{ form.password(class='form__input', placeholder="Password") }}
+							
+							</div>
+
+                            <div class="row">
+								<!-- <span class="fa fa-lock"></span> -->
+                {{ form.confirmPassword(class='form__input', placeholder="Confirm Password") }}
+							
+							</div>
+						
+							<div class="row">
+								<input type="submit" value="Sign up" class="btn">
+							</div>
+						</form>
+					</div>
+					<div class="row">
+						<p>Already have an account? <a  href="{{ url_for('login') }}">Login Here</a></p>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+  </div>
+     
+      
+  
+
+
+
+ 
+
+
+{% endblock %}

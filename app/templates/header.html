@@ -16,7 +16,7 @@
     
 
       <li >
-        <a class="" href="{{ url_for('register') }}">About</a>
+        <a class="" href="#">About</a>
     </li>
     </li>
 
@@ -26,13 +26,18 @@
        
   </div>
   <div class="header-right">
-    <button style="color: var(--idk);
-    ; border-color: var(--idk);
-    ;" class="sign-btn"><a class="" href="{{ url_for('login') }}">Sign in</a></button>
-
-
-    <button class="sign-btn" style="color: white; background-color: var(--idk);
-    ;"  ><a class="" href="{{ url_for('login') }}">Sign up</a></button>
+    {% if current_user.is_authenticated %}
+    <button style="color: var(--idk); border-color: var(--idk);" class="sign-btn">
+        <a class="" href="{{ url_for('logout') }}">Logout</a>
+    </button>
+{% else %}
+    <button style="color: var(--idk); border-color: var(--idk);" class="sign-btn">
+        <a class="" href="{{ url_for('login') }}">Sign in</a>
+    </button>
+    <button class="sign-btn" style="color: white; background-color: var(--idk);">
+        <a class="" href="{{ url_for('signup') }}">Sign up</a>
+    </button>
+{% endif %}
 
   </div>
 </nav>

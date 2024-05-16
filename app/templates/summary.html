@@ -2,13 +2,109 @@
 
 {% block main %}
 <link rel="stylesheet" href="{{ url_for('static', filename="css/chat.css") }}">
-<div id ="droppings">
-<div class="dropdown" onclick="toggleDropdown(this)">
-  <button id="dropdownButton" class="dropbtn">All Books<i class="arrow myarrow"></i></button>
+<div id = "choices">
+  <style>
+    /* Base styling for all buttons */
+    .btn {
+   
+        font-size: 16px;
+        padding: 10px;
+        margin: 10px;
+        border: none;
+        cursor: pointer;
+        border-radius: 5px;
+        box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px; /* Space between image and text */
+        width: 300px; /* Fixed width for all buttons */
+        height: 50px; /* Fixed height for all buttons */
+    }
 
+    /* Specific styling for individual buttons */
+    .btn-page {
+        background-color: #711a20; /* Green */
+        color: white;
+    }
+
+    #choices{
+      display: flex;
+
+      justify-content: space-evenly;
+    }
+
+    #pageInput {
+      text-align: center;
+      height: 32px;
+    width: 50px; /* Set width as needed, e.g., 100px */
+    padding: 5px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+    .btn-topics {
+        background-color: white; /* Blue */
+        color: #711a20;
+    }
+
+    /* Hover effects for both buttons */
+    .btn-page:hover {
+        opacity: 0.8;
+    }
+
+    .btn-topics:hover {
+        background-color: #711a20; /* Blue */
+        color: white;
  
+    }
 
+    /* Styling for the image inside the button */
+    .btn img {
+        width: 40px;  /* Fixed size for the image */
+        height: 40px;
+    }
+    .btn-page img{
+      width: 30px;  /* Fixed size for the image */
+        height: 30px;
+    }
+</style> 
+  <button class="btn btn-page" id="toggleButton1">
+    <img src="/static/images/number.png" alt="Page Icon">
+    Generate by Page Number</button>
+
+    <!-- Button to Generate by Pre-Chosen Topics -->
+    <button class="btn btn-topics" id="toggleButton">
+      <img src="/static/images/aiicon.png" alt="Page Icon">
+      Generate by Pre-Chosen Topics</button>
+</div>
+
+<div id = "droppings2">
+  <div class="dropdown" onclick="toggleDropdown(this)">
+    <button id="dropdownButton" class="dropbtn">All Books<i class="arrow myarrow"></i></button>
   
+    <div class="dropdown-content">
+      {% for book in books %}  
+      <a href="#" onclick="updateButtonText3(this)" data-full-name="{{ book.Name }}">{{ book.Name.replace('.pdf', '')[:40] }}</a>
+      {% endfor %}
+    </div>
+  </div>
+  <div style="display: inline-flex; vertical-align: center;" >
+    <p style="margin-right:15px; font-size: 20px; font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;">Page Number:</p>
+    <input  type="number" id="pageInput">
+  </div>
+
+  <div>
+    <button id ="num" class ="summarize-button" onclick="summarizeText(this)">Summarize</button>
+  </div>
+
+</div>
+
+<div id ="droppings">
+  
+<div class="dropdown" onclick="toggleDropdown(this)">
+  <button id="dropdownButton6" class="dropbtn">All Books<i class="arrow myarrow"></i></button>
+
   <div class="dropdown-content">
     {% for book in books %}  
     <a href="#" onclick="updateButtonText(this)" data-full-name="{{ book.Name }}">{{ book.Name.replace('.pdf', '')[:40] }}</a>
@@ -16,15 +112,109 @@
   </div>
 </div>
 
-<div class="dropdown" onclick="toggleDropdown2(this)">
-    <button id="dropdownButton2" class="dropbtn">Sections<i class="arrow myarrow"></i></button>
-  
-    <div class="dropdown-content">
-      {% for chapter in chapters %}
-      <a href="#" onclick="updateButtonText2(this)" data-full-name="{{ chapter.Name }}">{{ chapter.Name[:40] }}</a>
-      {% endfor %}
-    </div>
+<div class="dropdown" tabindex="0">  <!-- Make div focusable -->
+  <button id="dropdownButton2" class="dropbtn">Words<i class="arrow myarrow"></i></button>
+  <div id="wordsContainer" class="dropdown-content">
+      <!-- Checkboxes for words will be dynamically inserted here -->
   </div>
+</div>
+
+<div>
+  <button id = "notnum" class ="summarize-button" onclick="summarizeText(this)">Summarize</button>
+</div>
+
+
+
+
+<style>
+/* Add additional CSS for checkboxes and dropdown here */
+.checkbox-container {
+  display: block;
+  position: relative;
+  padding-left: 35px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  font-size: 16px;
+  user-select: none;
+}
+
+/* Style the checkmark/indicator */
+.checkbox-container .checkmark {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 25px;
+  width: 25px;
+  background-color: #eee;
+  border-radius: 4px;
+}
+.dropdown-content {
+    display: none;
+}
+
+/* Show the dropdown content when the dropdown is focused */
+.dropdown:focus-within .dropdown-content {
+    display: block;
+}
+/* On mouse-over, add a grey background color */
+.checkbox-container:hover input ~ .checkmark {
+  background-color: #ccc;
+}
+
+/* When the checkbox is checked, add a blue background */
+.checkbox-container input:checked ~ .checkmark {
+  background-color: #2196F3;
+}
+
+/* Create the checkmark/indicator (hidden when not checked) */
+.checkbox-container .checkmark:after {
+  content: "";
+  position: absolute;
+  display: none;
+}
+
+/* Show the checkmark when checked */
+.checkbox-container input:checked ~ .checkmark:after {
+  display: block;
+}
+
+/* Style the checkmark/indicator */
+.checkbox-container .checkmark:after {
+  left: 9px;
+  top: 5px;
+  width: 5px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 3px 3px 0;
+  -webkit-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  transform: rotate(45deg);
+}
+
+.invisible-checkbox {
+  /* Hide the checkbox but make it still clickable and accessible */
+  opacity: 0;
+  position: absolute;
+  left: -9999px;
+}
+
+/* The dropdown arrow - could use FontAwesome or similar for better arrows */
+.arrow {
+  /* Style for arrow */
+}
+
+.myarrow {
+  /* Style for myarrow */
+}
+
+/* Style for showing the dropdown */
+.show {
+  display: block;
+}
+</style>
+
+
+  
 
 </div>
 
@@ -39,8 +229,8 @@
 
       <div class = "exact">
         <ul>
-          <li>Select a book.</li>
-          <li>Select any section to see a brief summary, providing you with a quick overview.</li>
+          <li>Choose whether to summarize by page number or predefined topics.</li>
+          <li>Generate a brief summary, providing you with a quick overview.</li>
         </ul>
       </div>
       
@@ -63,65 +253,86 @@ var loadingIconHTML = `
   </div>
 `;
 
-function updateButtonText2(element) {
-  // Get the text of the clicked dropdown item
-  var bookName = element.textContent || element.innerText;
-  containerDiv.innerHTML = loadingIconHTML;
-  // Update the button's text
-  var button = document.getElementById('dropdownButton2');
-    // Check if the button exists to avoid errors
-    if (button) {
-        // Remove the existing text node(s) if any, keeping child elements intact
-        Array.from(button.childNodes).forEach(function(node) {
-            if (node.nodeType === Node.TEXT_NODE) {
-                button.removeChild(node);
-            }
-        });
-        // Add the new text node at the beginning of the button
-        button.insertBefore(document.createTextNode(bookName), button.firstChild);
-    }
-    var chapter = element.getAttribute('data-full-name');
-    var nextchapter = element.getAttribute('data-next-name');
+var words = [];
 
+document.getElementById("toggleButton").addEventListener("click", function() {
+    const choicesDiv = document.getElementById("choices");
+    const droppings = document.getElementById("droppings");
+    // Show the choices div
+    choicesDiv.style.display = "none";
+    byPagenumber = false
 
-// Retrieve bookName from localStorage
-    var bookName = localStorage.getItem('selectedBook');
-
-    // Prepare the data object for the POST request
-    const data = {
-        bookName: bookName,
-        chapter: chapter,
-        nextChapter: nextchapter,
-    };
-
-    fetch('/getSummary', {
-    method: 'POST',
-    headers: {
-        'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(data),
-})
-.then(response => response.json())
-.then(data => {
-  var responseData = data;
-  var textContent = "";
-  var anstextHTML = `
-    <p id="anstext" class="book-info">
-      ${textContent}
-    </p>
-  `;
-  containerDiv.innerHTML = anstextHTML;
-  addTextCharacterByCharacter(responseData)
-})
-.catch(error => {
-    console.error('Error sending data:', error);
-    // Handle any errors that occur during the fetch request
+    // Hide the button itself
+    droppings.style.display = "inline-flex";
+  
 });
+
+
+document.getElementById("toggleButton1").addEventListener("click", function() {
+    const choicesDiv = document.getElementById("choices");
+    const droppings = document.getElementById("droppings2");
+    // Show the choices div
+    choicesDiv.style.display = "none";
+    byPagenumber = true;
+    // Hide the button itself
+    droppings.style.display = "inline-flex";
+  
+});
+
+function summarizeText(element)
+{
+    // Select all elements with the class 'teal-box'
+  var tealBoxes = document.querySelectorAll('.teal-box');
+  containerDiv.innerHTML = loadingIconHTML;
+
+  // Loop through each teal-box element and set its max-width to 500px
+  tealBoxes.forEach(function(tealBox) {
+    tealBox.style.maxHeight = '460px';
+  });
+  const bookName = localStorage.getItem('selectedBook');
+  const pageInput = document.getElementById("pageInput");
+  console.log(words)
+  let requestBody; 
+    if (element.id === "num") {
+        requestBody = JSON.stringify({
+            bookName: bookName,
+            wordss: pageInput.value,
+            flag:true
+        });
+    } else {
+        requestBody = JSON.stringify({
+            bookName: bookName,
+            wordss: words,
+            flag:false
+        });
+    }
+  fetch('/getSummary', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json', // Indicates that the body of the request is JSON
+        },
+        
+        body: requestBody
+    })
+    .then(response => response.json()) // Parsing the JSON response from the server
+    .then(data => {
+                var responseData = data;
+                var textContent = "";
+                var anstextHTML = `
+                  <p id="anstext" class="book-info">
+                    ${textContent}
+                  </p>
+                `;
+                containerDiv.innerHTML = anstextHTML;
+                addTextCharacterByCharacter(responseData) // Handling the response data
+    })
+    .catch((error) => {
+        console.error('Error:', error); // Handling errors
+    });
 
 }
 
-
-function updateButtonText(element) {
+function updateButtonText3(element) {
   // Get the text of the clicked dropdown item
   var bookName = element.textContent || element.innerText;
 
@@ -140,42 +351,112 @@ function updateButtonText(element) {
     }
     var fullBookName = element.getAttribute('data-full-name');
     localStorage.setItem('selectedBook', fullBookName);
+    
+  
+
+  }
+
+function updateButtonText(element) {
+  // Get the text of the clicked dropdown item
+  var bookName = element.textContent || element.innerText;
+
+  // Update the button's text
+  var button = document.getElementById('dropdownButton6');
+    // Check if the button exists to avoid errors
+    if (button) {
+        // Remove the existing text node(s) if any, keeping child elements intact
+        Array.from(button.childNodes).forEach(function(node) {
+            if (node.nodeType === Node.TEXT_NODE) {
+                button.removeChild(node);
+            }
+        });
+        // Add the new text node at the beginning of the button
+        button.insertBefore(document.createTextNode(bookName), button.firstChild);
+    }
+    var fullBookName = element.getAttribute('data-full-name');
+    localStorage.setItem('selectedBook', fullBookName);
 
 
-    const data = { bookName: fullBookName };
+    
 
 // Send the POST request to the Flask "summaryy" route
-  fetch('/summary', {
-      method: 'POST', // Specify the method
-      headers: {
-          'Content-Type': 'application/json', // Specify the content type as JSON
-      },
-      body: JSON.stringify(data), // Convert the JavaScript object to a JSON string
-  })
-  .then(response => response.json())
-  .then(chapterInfo => {
-      console.log('Received chapters:', chapterInfo);
-      const chaptersInfo = chapterInfo;
-      const dropdownContents = document.querySelectorAll('.dropdown-content');
-      const dropdownContent = dropdownContents[1];
-      dropdownContent.innerHTML = ''; // Clear existing content
-      chaptersInfo.forEach(chapter => {
-      const anchor = document.createElement('a');
-      anchor.href = "#";
-      anchor.textContent = chapter.Name.slice(0, 40); // Limit to 40 characters
-      anchor.setAttribute('onclick', 'updateButtonText2(this)');
-      anchor.dataset.fullName = chapter.Name;
-      anchor.dataset.nextName = chapter.NextName;
-      dropdownContent.appendChild(anchor);
-    });
-      
-  })
+// Data to send in the POST request
+const data = { bookName: fullBookName };
 
-  .catch((error) => {
-      console.error('Error:', error); // Handle errors
-  });
+fetch('/get_topics', {
+  method: 'POST',  // Set method to POST to send data
+  headers: {
+    'Content-Type': 'application/json',  // Specify the content type as JSON
+  },
+  body: JSON.stringify(data),  // Convert the JavaScript object to a JSON string
+})
+.then(response => response.json())  // Parse the JSON response
+.then(topicsInfo => {
+ populateWordsDropdown(topicsInfo);
+    })
+    .catch(error => console.error('Error fetching words:', error));
 
 }
+
+function populateWordsDropdown(uniqueWords) {
+  const dropdownContent = document.getElementById('wordsContainer');
+  dropdownContent.innerHTML = ''; // Clear previous content
+
+  uniqueWords.forEach(word => {
+    // Create checkbox for each word
+    const label = document.createElement('label');
+    label.classList.add('checkbox-container');
+    label.textContent = word;
+    
+    const checkbox = document.createElement('input');
+    checkbox.type = 'checkbox';
+    checkbox.value = word;
+    checkbox.classList.add('invisible-checkbox');
+    const checkmark = document.createElement('span');
+    checkmark.classList.add('checkmark');
+    
+    // Append checkbox and checkmark to label
+    label.appendChild(checkbox);
+    label.appendChild(checkmark);
+    
+    // Append label to dropdown content
+    dropdownContent.appendChild(label);
+  });
+}
+
+function toggleDropdown2(element) {
+  // Toggle the dropdown content visibility
+  element.querySelector('.dropdown-content').classList.toggle('show');
+}
+
+// Event delegation for checkboxes inside dropdown
+document.getElementById('wordsContainer').addEventListener('change', (e) => {
+  if (e.target.type === 'checkbox') {
+    updateButtonText2();
+  }
+});
+
+function updateButtonText2() {
+  const selectedWords = [...document.querySelectorAll('#wordsContainer input[type="checkbox"]:checked')]
+                          .map(el => el.value);
+  const buttonText = selectedWords.length > 0 ? `${selectedWords.length} Selected` : 'Select Words';
+  document.getElementById('dropdownButton2').textContent = buttonText;
+  words = words.concat(selectedWords.filter(word => !words.includes(word)));
+}
+
+// Close the dropdown if the user clicks outside of it
+window.onclick = function(event) {
+  if (!event.target.matches('.dropbtn')) {
+    var dropdowns = document.getElementsByClassName('dropdown-content');
+    var i;
+    for (i = 0; i < dropdowns.length; i++) {
+      var openDropdown = dropdowns[i];
+      if (openDropdown.classList.contains('show')) {
+        openDropdown.classList.remove('show');
+      }
+    }
+  }
+};
 
 function addTextCharacterByCharacter(textContent) {
   // Get the container div

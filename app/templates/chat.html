@@ -12,7 +12,19 @@
   </div>
 </div>
 
+
+
+{% if selectedbook %}
+<script>
+    // Set selectedBook in localStorage
+    localStorage.setItem('selectedBook', '{{ selectedbook }}');
+    var isselected = true;
+</script>
+ 
+{% endif %}
+
 <div class="white-box">
+  
   
   <div id="chatc" class="chat-container">
     <img src="{{ url_for('static', filename='images/bot.jpeg') }}" alt="Chat bot" class="bot-img">
@@ -22,6 +34,7 @@
       </div>
 
       <div class = "exact">
+        
         <ul>
           <li>When you ask a question, we first find relevant pages within the book that matches closest to the answer</li>
           <li>We use these pages to best answer your question</li>
@@ -31,20 +44,17 @@
     </div>
     
   </div>
-  <div id = "ref" class="ref">
-    <p>
-      Ref. Page 42
-    </p>
-  </div>
+ 
 
   
 
   <div id = "sug" class="suggetions">
     <h3>Suggestions</h3>
     <div class="sug-box">
-      <p>How does the character of Atticus Finch embody the theme of moral integrity and justice in "To Kill a Mockingbird"?</p>
-      <p>Discuss the portrayal of social class differences in Maycomb. How do characters from different socioeconomic backgrounds interact, 
-        and what role does social class play in the narrative?</p>
+      {% for suggestion in suggestions %}  
+      <p>{{suggestion}}</p>
+    {% endfor %}
+   
     </div>
   </div>
 </div>
@@ -62,7 +72,7 @@
   var suggestions = document.getElementById("sug");
   var ref = document.getElementById("ref");
   suggestions.style.display = "none";
-  ref.style.display = "none";
+
   
   
 
@@ -162,6 +172,9 @@ function toggleDropdown(dropdown) {
             .then(response => response.json())
             .then(data => {
                 var responseData = data;
+                var responseString = responseData.response;
+                var suggestions = responseData.suggestions;
+                var pagenum = responseData.pagenum;
                 var textContent = "";
                 var anstextHTML = `
                   <p id="anstext" class="book-info">
@@ -169,7 +182,24 @@ function toggleDropdown(dropdown) {
                   </p>
                 `;
                 containerDiv.innerHTML = anstextHTML;
-                addTextCharacterByCharacter(responseData)
+                addTextCharacterByCharacter(responseString)
+                var sugBox = document.querySelector('.sug-box');
+                sugBox.innerHTML = '';
+
+                // Loop through the suggestions and create <p> elements
+                suggestions.forEach(function(suggestion) {
+                    var pElement = document.createElement('p');
+                    pElement.textContent = suggestion;
+                    sugBox.appendChild(pElement);
+                    pElement.addEventListener('click', function() {
+                      containerDiv.innerHTML = loadingIconHTML;
+                      console.log(pElement.textContent)
+                    // Call sendMessage with the text content of the clicked <p> element
+                    sendMessage(pElement.textContent); // Trim any leading/trailing whitespace
+                    });
+                            });
+
+          
         
     
               
@@ -178,6 +208,25 @@ function toggleDropdown(dropdown) {
             })
             .catch(error => console.error('Error:', error));
         }
+
+
+        function onPageLoad() {
+        // Your code here
+        if (isselected)
+        {
+          var selectedBook = localStorage.getItem('selectedBook');
+          var dropdownItems = document.querySelectorAll('.dropdown-content a');
+    dropdownItems.forEach(function(item) {
+        var fullName = item.getAttribute('data-full-name');
+        if (fullName === selectedBook) {
+            updateButtonText(item);
+        }
+    });
+        }
+    }
+
+    // Attach the onPageLoad function to the window.onload event
+    window.onload = onPageLoad;
 </script>
 
 

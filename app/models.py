@@ -29,8 +29,7 @@ class User(db.Model):
         except NameError:
             return str(self.id)  # python 3 support
 
-    def __repr__(self):
-        return '<User %r>' % (self.username)
+ 
     
 
 class Book(db.Model):
@@ -49,18 +48,18 @@ class Book(db.Model):
     
 
 
-class Chapters(db.Model):
-    __tablename__ = 'chapters'
+class Topics(db.Model):
+    __tablename__ = 'topics'
     id = db.Column(db.Integer, primary_key=True)
     book_id = db.Column(db.Integer, db.ForeignKey('book.bookid'), nullable=False)  # Reference the primary key of Book
-    chapters = db.Column(db.Text, nullable=False)  # Assuming chapters are stored as a long text
+    topics = db.Column(db.Text, nullable=False)  # Assuming chapters are stored as a long text
 
     # Relationship to the Book model (optional but helpful for object navigation)
-    book = db.relationship('Book', backref=db.backref('chapters', lazy='dynamic'))
+    book = db.relationship('Book', backref=db.backref('topics', lazy='dynamic'))
 
-    def __init__(self, book_id, chapters):
+    def __init__(self, book_id, topics):
         self.book_id = book_id
-        self.chapters = chapters
+        self.topics = topics
 
     def __repr__(self):
-        return '<Chapters %r>' % self.id
+        return '<Topics %r>' % self.id

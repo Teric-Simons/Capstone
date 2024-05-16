@@ -9,8 +9,8 @@ import nltk
 class BM25:
     def __init__(self, book, k1=1.5, b=0.75):
         self.book = book
-        self.book_size = len(book)
-        self.avg_doc_len = sum(len(doc) for doc in book) / self.book_size
+        self.book_size = len(book) # of pages in book
+        self.avg_doc_len = sum(len(doc) for doc in book) / self.book_size #sum of all pages in book / by #of pages
         self.doc_freqs = []
         self.idf = {}
         self.doc_len = []
@@ -21,10 +21,10 @@ class BM25:
     def initialize(self):
         df = {}
         for page in self.book:
-            self.doc_freqs.append(Counter(page))
+            self.doc_freqs.append(Counter(page))# get number of  words on page
             self.doc_len.append(len(page))
             for word in set(page):
-                df[word] = df.get(word, 0) + 1
+                df[word] = df.get(word, 0) + 1 #on how many pages does the word appear?
         for word, freq in df.items():
             self.idf[word] = math.log(1 + (self.book_size - freq + 0.5) / (freq + 0.5))
 
@@ -48,8 +48,9 @@ class BM25:
         return scores
     
 
-pages_text = []
-def extract_text_from_pdf(pdf_name):
+
+def extract_text_from_pdf(pdf_name, pagenum = None):
+    pages_text = []
     pdf_path = 'uploads/' + pdf_name
 
     with open(pdf_path, 'rb') as file:
@@ -60,8 +61,10 @@ def extract_text_from_pdf(pdf_name):
         for page in pdf_reader.pages:
             # Extract text from the page and append it to the list
             pages_text.append(page.extract_text())
-
-    return pages_text
+        
+    if pagenum:
+        return pages_text[pagenum-1]
+    return [pages_text, pages_text]
 
 
 def prepare_book(pages):
@@ -91,6 +94,8 @@ def prepare_query(query):
     """
     # Join the list into a single string
     query_str = " ".join(query)
+   
+    
     
     # Pattern to match escape sequences, special characters, symbols, and punctuation
     # This pattern keeps alphanumeric characters (letters and numbers) and spaces
@@ -115,11 +120,20 @@ def prepare_query(query):
 
 
 
-def main(pdf_name, query):
-    prequery = query
-    pages = extract_text_from_pdf(pdf_name)
-    book = prepare_book(pages)
+def main(pdf_name, query, pagenum = None, more = False):
+    scores = []
+    sorted_scores = []
+    bm25 = None
+    if( pagenum):
+    
+        pages = extract_text_from_pdf(pdf_name, pagenum = pagenum)
+    
+        return pages
 
+   
+    pages, pages_text = extract_text_from_pdf(pdf_name)
+    book = prepare_book(pages)
+   
     # Instantiate BM25 with the book
     bm25 = BM25(book)
 
@@ -128,16 +142,29 @@ def main(pdf_name, query):
   
     # Get scores for the query
     scores = bm25.get_scores(query)
+   
+
 
     # Sort scores in descending order to see which documents are most relevant
     sorted_scores = sorted(scores, key=lambda x: x[1], reverse=True)
-
+   
     # Display the results
-    for doc_index, score in sorted_scores[:1]:
-        print(f"Page: {doc_index}, Score: {score}")
-    page_num = sorted_scores[0][0]
-    page = pages_text[page_num]
-    return page, sorted_scores[0][1]
+    for i in range(10):
+        page_number, score = sorted_scores[i]
+        print(f"Page Number: {page_number}, Score: {score}")
+    
+
+    if more:
+        page_nums = [score[0] for score in sorted_scores[:4] if score[0]]
+        page = ' '.join([pages_text[page_num] for page_num in page_nums])
+
+        return page
+    else:
+        page_num = sorted_scores[0][0]
+       
+        page = pages_text[page_num]
+        
+        return page_num+1, page, sorted_scores[0][1]
 
 
 

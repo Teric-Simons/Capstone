@@ -7,12 +7,7 @@ $ flask --app app --debug run
 
 
 
-completion = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo", messages=[{"role": "user", "content": message}]) 
-        response = completion.choices[0].message.content.split(":")[-1].strip()   
-        print(response)
 
-        return jsonify(response) 
 
 
 
