@@ -8,9 +8,12 @@ EduBook offers a convenient summarization feature for textbooks. It analyzes the
 
 ![image](https://github.com/user-attachments/assets/9480f49d-9422-48d6-9688-93a6be1b7a03)
 
-![Image 2](link-to-image-2)
-![Image 3](link-to-image-3)
-![Image 4](link-to-image-4)
+![image](https://github.com/user-attachments/assets/784f4ac4-d63d-496f-890f-fe57a7a15f00)
+
+![image](https://github.com/user-attachments/assets/66a9a89f-bc27-49fb-9653-42a4e11077a1)
+
+![image](https://github.com/user-attachments/assets/a4e4af66-80f2-4389-bb79-559297f711c7)
+
 
 ## Features
 
@@ -40,7 +43,7 @@ For any questions or support, please contact us at [support@edubook.com](mailto:
 
 ---
 
-
+## Setup
 To set up the virtual environment and run the Flask application, follow these steps:
 
 ```sh
